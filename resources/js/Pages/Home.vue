@@ -1,5 +1,6 @@
 <script setup>
-import { Head, Link } from '@inertiajs/vue3';
+import GroupList from '@/Components/app/GroupList.vue'
+
 
 defineProps({
 
@@ -8,7 +9,18 @@ defineProps({
 
 <template>
     <Head title="Home" />
-    test
+    <div class="grid grid-cols-12 gap-3">
+        <div class="col-span-3 px-3 p-y-6">
+        <GroupList />
+
+        </div>
+        <div class="col-span-6">
+            Posts
+        </div>
+        <div class="col-span-3">
+            Followers
+        </div>
+    </div>
 </template>
 
 <style>
