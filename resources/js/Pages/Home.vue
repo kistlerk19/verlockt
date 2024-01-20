@@ -9,14 +9,14 @@ import PostList from '@/Components/app/PostList.vue';
 
 <template>
     <Head title="Home" />
-    <div class="grid gap-3 p-4 lg:grid-cols-12">
-        <div class="lg:col-span-3 lg:order-1">
+    <div class="grid h-full gap-3 p-4 lg:grid-cols-12">
+        <div class="h-full overflow-auto lg:col-span-3 lg:order-1">
             <GroupList />
         </div>
-        <div class="lg:col-span-3 lg:order-3">
+        <div class="h-full overflow-auto lg:col-span-3 lg:order-3">
             <FollowingList />
         </div>
-        <div class="lg:col-span-6 lg:order-2">
+        <div class="h-full overflow-auto lg:col-span-6 lg:order-2">
             <CreatePost />
             <PostList />
         </div>

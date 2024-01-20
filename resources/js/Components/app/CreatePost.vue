@@ -6,7 +6,7 @@ const postCreating = ref(false);
 
 <template>
   <div class="p-4 mb-4 bg-gray-100 rounded">
-    <div @click="postCreating = true" class="px-2 py-3 text-gray-400 border border-2 border-gray-200 rounded-md">
+    <div @click="postCreating = true" class="px-2 py-3 text-gray-400 border border-2 border-gray-200 rounded-lg">
       click here to create new post
     </div>
 
