@@ -12,7 +12,7 @@ const isImage = (attachment) => {
 </script>
 
 <template>
-  <div class="p-4 mb-3 bg-gray-100 border rounded-md shadow">
+  <div class="p-4 mb-3 bg-gray-100 border rounded-md shadow hover:bg-gray-300">
     <div class="flex items-center gap-2 mb-3">
       <a href="javascript:void(0)">
         <img

@@ -11,17 +11,77 @@ import { ref } from 'vue';
 </script>
 
 <template>
-    <div class="px-3 py-4 bg-gray-100 border rounded-lg ">
+    <div class="flex flex-col px-3 py-3 overflow-hidden bg-gray-100 border rounded-lg lg:h-full">
         <h2 class="mb-4 text-xl font-bold">Following</h2>
         <TextInput :model-value="searchKey" placeholder="Search" class="w-full"/>
-        <div class="py-8">
-            <div v-if="false" class="flex text-center text-gray-400">
-                You do not have friends yet.
+        <div class="lg:flex-1 h-[300px] mt-3 overflow-auto">
+            <div v-if="false" class="p-3 text-center text-gray-400">
+                You are not following anyone yet.
             </div>
             <div v-else>
                 <FollowingItem
                     image="https://picsum.photos/100"
                     name="Charles Leclerc"
+                />
+                <FollowingItem
+                    image="https://picsum.photos/100"
+                    name="Jeffery Dahmer"
+                />
+                <FollowingItem
+                    image="https://picsum.photos/100"
+                    name="Jeffery Dahmer"
+                />
+                <FollowingItem
+                    image="https://picsum.photos/100"
+                    name="Jeffery Dahmer"
+                />
+                <FollowingItem
+                    image="https://picsum.photos/100"
+                    name="Jeffery Dahmer"
+                />
+                <FollowingItem
+                    image="https://picsum.photos/100"
+                    name="Jeffery Dahmer"
+                />
+                <FollowingItem
+                    image="https://picsum.photos/100"
+                    name="Jeffery Dahmer"
+                />
+                <FollowingItem
+                    image="https://picsum.photos/100"
+                    name="Jeffery Dahmer"
+                />
+                <FollowingItem
+                    image="https://picsum.photos/100"
+                    name="Jeffery Dahmer"
+                />
+                <FollowingItem
+                    image="https://picsum.photos/100"
+                    name="Jeffery Dahmer"
+                />
+                <FollowingItem
+                    image="https://picsum.photos/100"
+                    name="Jeffery Dahmer"
+                />
+                <FollowingItem
+                    image="https://picsum.photos/100"
+                    name="Jeffery Dahmer"
+                />
+                <FollowingItem
+                    image="https://picsum.photos/100"
+                    name="Jeffery Dahmer"
+                />
+                <FollowingItem
+                    image="https://picsum.photos/100"
+                    name="Jeffery Dahmer"
+                />
+                <FollowingItem
+                    image="https://picsum.photos/100"
+                    name="Jeffery Dahmer"
+                />
+                <FollowingItem
+                    image="https://picsum.photos/100"
+                    name="Jeffery Dahmer"
                 />
                 <FollowingItem
                     image="https://picsum.photos/100"
