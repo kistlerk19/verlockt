@@ -1,7 +1,6 @@
 <script setup>
 import FollowingListItem from '@/Components/app/FollowingListItem.vue';
 import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue";
-import TextInput from '@/Components/TextInput.vue';
 </script>
 
 <template>

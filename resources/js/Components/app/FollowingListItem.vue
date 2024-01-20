@@ -47,7 +47,7 @@
                     name="Jeffery Dahmer"
                 />
                 <FollowingItem
-                    avatar="https://randomuser.me/api/portraits/men/79.jpg"
+                    avatar="https://randomuser.me/api/portraits/men/53.jpg"
                     name="Charles Leclerc"
                 />
                 <FollowingItem
