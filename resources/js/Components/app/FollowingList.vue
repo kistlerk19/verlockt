@@ -11,9 +11,9 @@ import { ref } from 'vue';
 </script>
 
 <template>
-    <div class="px-3">
-        <h2 class="mb-4 text-2xl font-bold">Following</h2>
-        <TextInput :model-value="searchKey" placeholder="Search"/>
+    <div class="px-3 py-4 bg-gray-100 border rounded-lg ">
+        <h2 class="mb-4 text-xl font-bold">Following</h2>
+        <TextInput :model-value="searchKey" placeholder="Search" class="w-full"/>
         <div class="py-8">
             <div v-if="false" class="flex text-center text-gray-400">
                 You do not have friends yet.

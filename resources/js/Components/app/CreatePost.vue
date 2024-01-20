@@ -5,14 +5,15 @@ const postCreating = ref(false);
 </script>
 
 <template>
-  <div class="py-6">
-    <div @click="postCreating = true" class="px-2 py-3 text-gray-500 border border-gray-400 rounded-md">
-      Create New Post
+  <div class="p-4 mb-4 bg-gray-100 rounded">
+    <div @click="postCreating = true" class="px-2 py-3 text-gray-400 border border-2 border-gray-200 rounded-md">
+      click here to create new post
     </div>
 
     <div v-if="postCreating">
       <div class="flex items-center justify-end mt-6 gap-x-6">
         <button
+            @click="postCreating = false"
           type="button"
           class="text-sm font-semibold leading-6 text-gray-900"
         >
