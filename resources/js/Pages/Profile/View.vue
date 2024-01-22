@@ -1,152 +1,113 @@
 
 
 <template>
-    <AuthenticatedLayout>
-      <div class="container mx-auto">
-        <div class="relative ">
-          <img
+  <AuthenticatedLayout>
+    <div class="container h-full mx-auto overflow-auto">
+      <div class="relative">
+        <img
           class="object-cover rounded-md h-[200px] w-full"
-          src="/images/cover.jpg" alt="" />
+          src="/images/cover.jpg"
+          alt=""
+        />
+        <div class="flex">
           <img
-          class="absolute left-[64px] rounded-full w-[128px] h-[128px] -bottom-[54px]"
-          src="/images/pfp.png" alt="" />
+            class="ml-[54px] rounded-full w-[128px] h-[128px] -mt-[64px]"
+            src="/images/pfp.png"
+            alt=""
+          />
+          <div class="flex items-center justify-between flex-1 p-2">
+            <h2 class="text-lg font-bold">{{ user.name }}</h2>
+            <PrimaryButton class="mr-8">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+              </svg>
+
+              Edit Profile
+            </PrimaryButton>
+          </div>
         </div>
-          <div class="">
-              <TabGroup>
-                <TabList class="flex pl-[200px] pt-2">
-                  <Tab
-                    v-for="category in Object.keys(categories)"
-                    as="template"
-                    :key="category"
-                    v-slot="{ selected }"
-                  >
-                    <button
-                      :class="[
-                        'rounded px-3 py-2.5 text-sm font-medium leading-5',
-                        'focus:outline-none',
-                        selected
-                          ? 'shadow-lg text-blue-500 border-b border-b-2 border-blue-500 bg-blue-100'
-                          : 'text-gray-700',
-                      ]"
-                    >
-                      {{ category }}
-                    </button>
-                  </Tab>
-                </TabList>
-
-                <TabPanels class="mt-2">
-                  <TabPanel
-                    v-for="(posts, idx) in Object.values(categories)"
-                    :key="idx"
-                    :class="[
-                      'rounded-xl bg-white p-3',
-                      'ring-white/60 ring-offset-2 ring-offset-blue-400 focus:outline-none focus:ring-2',
-                    ]"
-                  >
-                    <ul>
-                      <li
-                        v-for="post in posts"
-                        :key="post.id"
-                        class="relative p-3 rounded-md hover:bg-gray-100"
-                      >
-                        <h3 class="text-sm font-medium leading-5">
-                          {{ post.title }}
-                        </h3>
-
-                        <ul
-                          class="flex mt-1 space-x-1 text-xs font-normal leading-4 text-gray-500"
-                        >
-                          <li>{{ post.date }}</li>
-                          <li>&middot;</li>
-                          <li>{{ post.commentCount }} comments</li>
-                          <li>&middot;</li>
-                          <li>{{ post.shareCount }} shares</li>
-                        </ul>
-
-                        <a
-                          href="#"
-                          :class="[
-                            'absolute inset-0 rounded-md',
-                            'ring-blue-400 focus:z-10 focus:outline-none focus:ring-2',
-                          ]"
-                        />
-                      </li>
-                    </ul>
-                  </TabPanel>
-                </TabPanels>
-              </TabGroup>
-            </div>
       </div>
-    </AuthenticatedLayout>
+      <div class="mt-4">
+        <TabGroup>
+          <TabList class="flex pl-[200px] pt-2">
+            <Tab
+              v-slot="{ selected }"
+            >
+              <TabItem text="About" as="template" :selected="selected" />
+            </Tab>
+            <Tab
+              v-slot="{ selected }"
+            >
+              <TabItem text="Posts" as="template" :selected="selected" />
+            </Tab>
+            <Tab
+              v-slot="{ selected }"
+            >
+              <TabItem text="Following" as="template" :selected="selected" />
+            </Tab>
+            <Tab
+              v-slot="{ selected }"
+            >
+            <TabItem text="Followers" as="template" :selected="selected" />
+            </Tab>
+            <Tab
+              v-slot="{ selected }"
+            >
+            <TabItem text="Media" as="template" :selected="selected" />
+            </Tab>
+          </TabList>
 
-  </template>
+          <TabPanels class="mt-2">
+            <TabPanel
+              class="p-4"
+            >
+              <Edit :must-verify-email="mustVerifyEmail" :status="status" />
+            </TabPanel>
+            <TabPanel
+              class="p-3 bg-white rounded shadow"
+            >
+              Posts
+            </TabPanel>
+            <TabPanel
+              class="p-3 bg-white rounded shadow"
+            >
+              Following
+            </TabPanel>
+            <TabPanel
+              class="p-3 bg-white rounded shadow"
+            >
+              Followers
+            </TabPanel>
+            <TabPanel
+              class="p-3 bg-white rounded shadow"
+            >
+              Media
+            </TabPanel>
+          </TabPanels>
+        </TabGroup>
+      </div>
+    </div>
+  </AuthenticatedLayout>
+</template>
 
   <script setup>
-  import { ref } from 'vue'
-  import { Head, usePage } from '@inertiajs/vue3';
-  import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue';
-  import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-
+import { ref } from "vue";
+import { Head, usePage } from "@inertiajs/vue3";
+import { TabGroup, TabList, Tab, TabPanels, TabPanel } from "@headlessui/vue";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+import TabItem from "./Partials/TabItem.vue";
+import Edit from "./Edit.vue";
+import PrimaryButton from '@/Components/PrimaryButton.vue';
 
 defineProps({
-    mustVerifyEmail: {
-        type: Boolean,
-    },
-    status: {
-        type: String,
-    },
+  mustVerifyEmail: {
+    type: Boolean,
+  },
+  status: {
+    type: String,
+  },
 });
 
 const user = usePage().props.auth.user;
 
-  const categories = ref({
-    Recent: [
-      {
-        id: 1,
-        title: 'Does drinking coffee make you smarter?',
-        date: '5h ago',
-        commentCount: 5,
-        shareCount: 2,
-      },
-      {
-        id: 2,
-        title: "So you've bought coffee... now what?",
-        date: '2h ago',
-        commentCount: 3,
-        shareCount: 2,
-      },
-    ],
-    Popular: [
-      {
-        id: 1,
-        title: 'Is tech making coffee better or worse?',
-        date: 'Jan 7',
-        commentCount: 29,
-        shareCount: 16,
-      },
-      {
-        id: 2,
-        title: 'The most innovative things happening in coffee',
-        date: 'Mar 19',
-        commentCount: 24,
-        shareCount: 12,
-      },
-    ],
-    Trending: [
-      {
-        id: 1,
-        title: 'Ask Me Anything: 10 answers to your questions about coffee',
-        date: '2d ago',
-        commentCount: 9,
-        shareCount: 5,
-      },
-      {
-        id: 2,
-        title: "The worst advice we've ever heard about coffee",
-        date: '4d ago',
-        commentCount: 1,
-        shareCount: 2,
-      },
-    ],
-  })
-  </script>
+</script>
