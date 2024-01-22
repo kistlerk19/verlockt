@@ -22,6 +22,7 @@ class ProfileController extends Controller
         return Inertia::render('Profile/View', [
             'mustVerifyEmail' => $user instanceof MustVerifyEmail,
             'status' => session('status'),
+            'success' => session('success'),
             'user' => new UserResource($user),
         ]);
     }
@@ -29,13 +30,13 @@ class ProfileController extends Controller
     /**
      * Display the user's profile form.
      */
-    // public function edit(Request $request): Response
-    // {
-    //     return Inertia::render('Profile/Edit', [
-    //         'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
-    //         'status' => session('status'),
-    //     ]);
-    // }
+    public function edit(Request $request): Response
+    {
+        return Inertia::render('Profile/Edit', [
+            'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
+            'status' => session('status'),
+        ]);
+    }
 
     /**
      * Update the user's profile information.
@@ -85,6 +86,19 @@ class ProfileController extends Controller
         $avatar = $data['avatar'] ?? null;
         $cover = $data['cover'] ?? null;
 
+        $success = '';
+
+
+        if($avatar)
+        {
+            if ($user->avatar_path) {
+                Storage::disk('public')->delete($user->avatar_path);
+            }
+            $path = $avatar->store('images/'.$user->id . '/avatar', 'public');
+            $user->update(['avatar_path' => $path]);
+
+            $success = 'Avatar Was Updated.';
+        }
 
         if($cover)
         {
@@ -93,8 +107,10 @@ class ProfileController extends Controller
             }
             $path = $cover->store('images/'.$user->id . '/cover', 'public');
             $user->update(['cover_path' => $path]);
+
+            $success = 'Cover Image was Updated.';
         }
 
-        return back()->with('status', 'cover-image-updated');
+        return back()->with('success', $success);
     }
 }
