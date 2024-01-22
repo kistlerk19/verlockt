@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ProfileUpdateRequest;
-use App\Http\Resources\UserResource;
 use App\Models\User;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
+use Illuminate\Http\Request;
+use App\Http\Resources\UserResource;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Redirect;
+use App\Http\Requests\ProfileUpdateRequest;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 class ProfileController extends Controller
 {
@@ -84,8 +85,12 @@ class ProfileController extends Controller
         $avatar = $data['avatar'] ?? null;
         $cover = $data['cover'] ?? null;
 
+
         if($cover)
         {
+            if ($user->cover_path) {
+                Storage::disk('public')->delete($user->cover_path);
+            }
             $path = $cover->store('images/'.$user->id . '/cover', 'public');
             $user->update(['cover_path' => $path]);
         }

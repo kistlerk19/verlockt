@@ -20,17 +20,15 @@ const props = defineProps({
     type: Object,
   },
 });
-
 const imageForm = useForm({
   cover: null,
   avatar: null,
 });
 
 const coverImageSrc = ref("");
-
 const authUser = usePage().props.auth.user;
-
 const isMyProfile = computed(() => authUser && authUser.id === props.user.id);
+const showNotification = ref(true);
 
 function onCoverChange(event) {
   imageForm.cover = event.target.files[0];
@@ -48,9 +46,10 @@ function onCoverChange(event) {
 function submitCoverImage() {
   imageForm.post(route("profile.image.update"), {
     onSuccess: (user) => {
-      console.log("====================================");
-      console.log(user);
-      console.log("====================================");
+      cancelCoverImage();
+      setTimeout(() => {
+        showNotification.value = false;
+      }, 5000);
     },
   });
 }
@@ -62,17 +61,24 @@ function cancelCoverImage() {
 
 <template>
   <AuthenticatedLayout>
-    <!-- <pre>{{ errors }}</pre> -->
     <!-- max-w-[800px] -->
     <div class="container h-full mx-auto overflow-auto">
+      <!-- Success Notification -->
       <div
-        v-show="status === 'cover-image-updated'"
-        class="mt-2 text-sm font-medium text-green-600 dark:text-green-400"
+        v-show="showNotification && status === 'cover-image-updated'"
+        class="px-3 py-2 my-2 mt-2 text-sm font-medium text-gray-100 bg-blue-300 rounded"
       >
         Your cover image has been updated.
       </div>
-      <!-- <pre>{{ user }}</pre> -->
+      <div
+          v-if="errors.cover"
+          class="px-3 py-2 my-2 mt-2 text-sm font-medium text-gray-100 bg-red-400 rounded"
+        >
+          {{errors.cover}}
+        </div>
+
       <div class="relative group">
+
         <img
           class="object-cover rounded-md h-[200px] w-full"
           :src="coverImageSrc || user.cover_url || '/images/default_cover.jpg'"
