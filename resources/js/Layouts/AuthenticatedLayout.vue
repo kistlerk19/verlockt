@@ -5,10 +5,10 @@ import Dropdown from "@/Components/Dropdown.vue";
 import DropdownLink from "@/Components/DropdownLink.vue";
 import NavLink from "@/Components/NavLink.vue";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink.vue";
-import { Link } from "@inertiajs/vue3";
+import { Link, usePage } from "@inertiajs/vue3";
 
 const showingNavigationDropdown = ref(false);
-const user = usePage().props.auth.user;
+const authUser = usePage().props.auth.user;
 </script>
 
 <template>
@@ -42,14 +42,14 @@ const user = usePage().props.auth.user;
           <div class="hidden sm:flex sm:items-center sm:ms-6">
             <!-- Settings Dropdown -->
             <div class="relative ms-3">
-              <Dropdown align="right" width="48">
+              <Dropdown v-if="authUser" align="right" width="48">
                 <template #trigger>
                   <span class="inline-flex rounded-md">
                     <button
                       type="button"
                       class="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out bg-white border border-transparent rounded-md dark:text-gray-400 dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none"
                     >
-                      {{ $page.props.auth.user.username }}
+                      {{ authUser.username }}
 
                       <svg
                         class="ms-2 -me-0.5 h-4 w-4"
@@ -68,7 +68,7 @@ const user = usePage().props.auth.user;
                 </template>
 
                 <template #content>
-                  <DropdownLink :href="route('profile', {username:  $page.props.auth.user.username })">
+                  <DropdownLink :href="route('profile', {username:  authUser.username })">
                     Profile
                   </DropdownLink>
                   <DropdownLink
@@ -80,6 +80,9 @@ const user = usePage().props.auth.user;
                   </DropdownLink>
                 </template>
               </Dropdown>
+              <div v-else>
+                <Link :href="route('login')">Login</Link>
+              </div>
             </div>
           </div>
 
@@ -136,29 +139,32 @@ const user = usePage().props.auth.user;
                     </div> -->
 
         <!-- Responsive Settings Options -->
-        <div class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">
-          <div class="px-4">
-            <div class="text-base font-medium text-gray-800 dark:text-gray-200">
-              {{ $page.props.auth.user.name }}
-            </div>
-            <div class="text-sm font-medium text-gray-500">
-              {{ $page.props.auth.user.email }}
-            </div>
-          </div>
+        <template v-if="authUser">
+            <div class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">
+                <div class="px-4">
+                  <div class="text-base font-medium text-gray-800 dark:text-gray-200">
+                    {{ authUser.name }}
+                  </div>
+                  <div class="text-sm font-medium text-gray-500">
+                    {{ authUser.email }}
+                  </div>
+                </div>
 
-          <div class="mt-3 space-y-1">
-            <ResponsiveNavLink :href="route('profile', {username:  $page.props.auth.user.username })">
-              Profile
-            </ResponsiveNavLink>
-            <ResponsiveNavLink
-              :href="route('logout')"
-              method="post"
-              as="button"
-            >
-              Log Out
-            </ResponsiveNavLink>
-          </div>
-        </div>
+                <div class="mt-3 space-y-1">
+                  <ResponsiveNavLink :href="route('profile', {username:  authUser.username })">
+                    Profile
+                  </ResponsiveNavLink>
+                  <ResponsiveNavLink
+                    :href="route('logout')"
+                    method="post"
+                    as="button"
+                  >
+                    Log Out
+                  </ResponsiveNavLink>
+                </div>
+              </div>
+        </template>
+        <template v-else>Login</template>
       </div>
     </nav>
 
