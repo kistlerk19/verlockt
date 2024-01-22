@@ -72,4 +72,24 @@ class ProfileController extends Controller
 
         return Redirect::to('/');
     }
+
+    public function updateProfileImage(Request $request, User $user)
+    {
+        $user = $request->user();
+        $data = $request->validate([
+            'cover' => ['nullable', 'image'],
+            'avatar' => ['nullable', 'image']
+        ]);
+
+        $avatar = $data['avatar'] ?? null;
+        $cover = $data['cover'] ?? null;
+
+        if($cover)
+        {
+            $path = $cover->store('images/'.$user->id . '/cover', 'public');
+            $user->update(['cover_path' => $path]);
+        }
+
+        return back()->with('status', 'cover-image-updated');
+    }
 }

@@ -1,6 +1,6 @@
 <script setup>
-import { ref, computed } from "vue";
-import { Head, usePage } from "@inertiajs/vue3";
+import { ref, computed, reactive } from "vue";
+import { Head, usePage, router, useForm } from "@inertiajs/vue3";
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from "@headlessui/vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import TabItem from "./Partials/TabItem.vue";
@@ -9,6 +9,7 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import { XMarkIcon, ArrowUpTrayIcon } from "@heroicons/vue/24/solid";
 
 const props = defineProps({
+  errors: Object,
   mustVerifyEmail: {
     type: Boolean,
   },
@@ -20,41 +21,56 @@ const props = defineProps({
   },
 });
 
+const imageForm = useForm({
+  cover: null,
+  avatar: null,
+});
+
 const coverImageSrc = ref("");
-let coverImageFile = null;
+
 const authUser = usePage().props.auth.user;
 
 const isMyProfile = computed(() => authUser && authUser.id === props.user.id);
 
 function onCoverChange(event) {
-  coverImageFile = event.target.files[0];
+  imageForm.cover = event.target.files[0];
 
-  if (coverImageFile) {
+  if (imageForm.cover) {
     const reader = new FileReader();
     reader.onload = () => {
       coverImageSrc.value = reader.result;
     };
 
-    reader.readAsDataURL(coverImageFile);
+    reader.readAsDataURL(imageForm.cover);
   }
 }
 
-function submitCoverImage()
-{
-    console.log('====================================');
-    console.log(coverImageFile);
-    console.log('====================================');
+function submitCoverImage() {
+  imageForm.post(route("profile.image.update"), {
+    onSuccess: (user) => {
+      console.log("====================================");
+      console.log(user);
+      console.log("====================================");
+    },
+  });
 }
-function cancelCoverImage()
-{
-    coverImageFile = null;
-    coverImageSrc.value = null;
+function cancelCoverImage() {
+  imageForm.cover = null;
+  coverImageSrc.value = null;
 }
 </script>
 
 <template>
   <AuthenticatedLayout>
+    <!-- <pre>{{ errors }}</pre> -->
+    <!-- max-w-[800px] -->
     <div class="container h-full mx-auto overflow-auto">
+      <div
+        v-show="status === 'cover-image-updated'"
+        class="mt-2 text-sm font-medium text-green-600 dark:text-green-400"
+      >
+        Your cover image has been updated.
+      </div>
       <!-- <pre>{{ user }}</pre> -->
       <div class="relative group">
         <img
@@ -96,14 +112,14 @@ function cancelCoverImage()
           </button>
           <div v-else class="flex gap-2">
             <button
-                @click="cancelCoverImage"
+              @click="cancelCoverImage"
               class="flex items-center px-2 py-1 text-xs text-gray-700 rounded opacity-0 group-hover:opacity-100 bg-gray-50 hover:bg-gray-300"
             >
               <XMarkIcon class="w-3 h-3 mr-2" />
               Cancel
             </button>
             <button
-                @click="submitCoverImage"
+              @click="submitCoverImage"
               class="flex items-center px-2 py-1 text-xs text-gray-100 bg-gray-700 rounded opacity-0 group-hover:opacity-100 hover:bg-gray-900"
             >
               <ArrowUpTrayIcon class="w-3 h-3 mr-2" />
@@ -115,11 +131,13 @@ function cancelCoverImage()
         <div class="flex">
           <img
             class="ml-[54px] rounded-full w-[128px] h-[128px] -mt-[64px]"
-            :src="user.cover_url || '/images/default_pfp.png'"
+            :src="user.avatar_url || '/images/default_pfp.png'"
             alt=""
           />
           <div class="flex items-center justify-between flex-1 p-2">
-            <h2 class="text-lg font-bold">{{ user.name }}</h2>
+            <h2 class="text-lg font-bold">
+              {{ user.name }}
+            </h2>
             <PrimaryButton v-if="isMyProfile" class="mr-8">
               <svg
                 xmlns="http://www.w3.org/2000/svg"

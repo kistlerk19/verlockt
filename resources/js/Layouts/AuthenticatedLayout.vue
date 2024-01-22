@@ -13,10 +13,10 @@ const authUser = usePage().props.auth.user;
 
 <template>
   <div
-    class="flex flex-col h-full overflow-hidden bg-gray-100 dark:bg-gray-900"
+    class="flex flex-col h-full overflow-hidden bg-gray-100 "
   >
     <nav
-      class="bg-white border-b border-gray-100 dark:bg-gray-800 dark:border-gray-700"
+      class="bg-white border-b border-gray-100 "
     >
       <!-- Primary Navigation Menu -->
       <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
@@ -26,7 +26,7 @@ const authUser = usePage().props.auth.user;
             <div class="flex items-center shrink-0">
               <Link :href="route('dashboard')">
                 <ApplicationLogo
-                  class="block w-auto text-gray-800 fill-current h-9 dark:text-gray-200"
+                  class="block w-auto text-gray-800 fill-current h-9 "
                 />
               </Link>
             </div>
@@ -47,7 +47,7 @@ const authUser = usePage().props.auth.user;
                   <span class="inline-flex rounded-md">
                     <button
                       type="button"
-                      class="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out bg-white border border-transparent rounded-md dark:text-gray-400 dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none"
+                      class="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out bg-white border border-transparent rounded-md hover:text-gray-700 focus:outline-none"
                     >
                       {{ authUser.username }}
 
@@ -90,7 +90,7 @@ const authUser = usePage().props.auth.user;
           <div class="flex items-center -me-2 sm:hidden">
             <button
               @click="showingNavigationDropdown = !showingNavigationDropdown"
-              class="inline-flex items-center justify-center p-2 text-gray-400 transition duration-150 ease-in-out rounded-md dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-900 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-900 focus:text-gray-500 dark:focus:text-gray-400"
+              class="inline-flex items-center justify-center p-2 text-gray-400 transition duration-150 ease-in-out rounded-md hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500"
             >
               <svg
                 class="w-6 h-6"
@@ -140,9 +140,9 @@ const authUser = usePage().props.auth.user;
 
         <!-- Responsive Settings Options -->
         <template v-if="authUser">
-            <div class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">
+            <div class="pt-4 pb-1 border-t border-gray-200 ">
                 <div class="px-4">
-                  <div class="text-base font-medium text-gray-800 dark:text-gray-200">
+                  <div class="text-base font-medium text-gray-800 ">
                     {{ authUser.name }}
                   </div>
                   <div class="text-sm font-medium text-gray-500">
@@ -169,7 +169,7 @@ const authUser = usePage().props.auth.user;
     </nav>
 
     <!-- Page Heading -->
-    <header class="bg-white shadow dark:bg-gray-800" v-if="$slots.header">
+    <header class="bg-white shadow " v-if="$slots.header">
       <div class="px-4 py-6 mx-auto max-w-7xl sm:px-6 lg:px-8">
         <slot name="header" />
       </div>
