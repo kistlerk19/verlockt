@@ -11,7 +11,7 @@ defineProps({
 </script>
 
 <template>
-  <Head title="Home" />
+  <!-- <Head title="Home" /> -->
   <AuthenticatedLayout>
     <!-- <pre>{{ posts }}</pre> -->
     <div class="grid h-full gap-3 p-4 lg:grid-cols-12">
