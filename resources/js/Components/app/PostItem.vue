@@ -17,7 +17,7 @@ const isImage = (attachment) => {
       <a href="javascript:void(0)">
         <img
           :src="post.user.avatar_url"
-          class="w-[40px] rounded-full border-2 transition-all hover:border-blue-400"
+          class="w-[40px] h-[40px] rounded-full border-2 transition-all hover:border-blue-400"
         />
       </a>
       <div>
@@ -41,14 +41,16 @@ const isImage = (attachment) => {
     <div class="mb-3">
       <Disclosure v-slot="{ open }">
         <div v-if="!open" v-html="post.body.substring(0, 200)" />
-        <DisclosurePanel>
-          <div v-html="post.body" />
-        </DisclosurePanel>
-        <DisclosureButton
-          class="flex items-center justify-end w-full px-4 py-2 text-sm font-medium text-left text-blue-500 rounded-lg hover:underline focus:outline-none focus-visible:ring"
-        >
-          {{ open ? "Read less" : "Read more..." }}
-        </DisclosureButton>
+        <template v-if="post.body.length > 200">
+            <DisclosurePanel>
+                <div v-html="post.body" />
+              </DisclosurePanel>
+              <DisclosureButton
+                class="flex items-center justify-end w-full px-4 py-2 text-sm font-medium text-left text-blue-500 rounded-lg hover:underline focus:outline-none focus-visible:ring"
+              >
+                {{ open ? "Read less" : "Read more..." }}
+              </DisclosureButton>
+        </template>
       </Disclosure>
     </div>
 
