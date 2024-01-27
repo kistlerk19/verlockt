@@ -25,7 +25,7 @@ defineProps({
         class="flex flex-col h-full overflow-hidden lg:col-span-6 lg:order-2"
       >
         <CreatePost />
-        <PostList class="flex-1" />
+        <PostList :posts="posts.data" class="flex-1" />
       </div>
     </div>
   </AuthenticatedLayout>

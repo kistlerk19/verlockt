@@ -29,7 +29,7 @@ defineExpose({ focus: () => input.value.focus() });
 
 function onInputChange ($event)
 {
-    // emit('update:modelValue', $event.target.value)
+    emit('update:modelValue', $event.target.value)
     // const textarea = this.$refs.myTextarea;
     if(props.autoResize)
     {

@@ -16,7 +16,7 @@ const isImage = (attachment) => {
     <div class="flex items-center gap-2 mb-3">
       <a href="javascript:void(0)">
         <img
-          :src="post.user.avatar"
+          :src="post.user.avatar_url"
           class="w-[40px] rounded-full border-2 transition-all hover:border-blue-400"
         />
       </a>
