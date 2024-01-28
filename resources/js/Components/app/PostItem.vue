@@ -4,6 +4,7 @@ import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue'
 import { ChevronDownIcon, PencilIcon, EllipsisVerticalIcon } from '@heroicons/vue/20/solid';
 import { TrashIcon } from "@heroicons/vue/24/solid";
 import PostModal from "@/Components/app/PostModal.vue";
+import PostUserHeader from "@/Components/app/PostUserHeader.vue";
 import { ref } from "vue";
 
 const showEditModel = ref(false)
@@ -21,30 +22,7 @@ const isImage = (attachment) => {
 <template>
   <div class="p-4 mb-3 bg-gray-100 border rounded-md shadow hover:bg-gray-300">
     <div class="flex items-center justify-between mb-3">
-      <div class="flex items-center gap-2">
-        <a href="javascript:void(0)">
-            <img
-              :src="post.user.avatar_url"
-              class="w-[40px] h-[40px] rounded-full border-2 transition-all hover:border-blue-400"
-            />
-          </a>
-          <div>
-            <h4 class="font-bold">
-              <a href="javascript:void(0)" class="hover:underline">
-                {{ post.user.name }}
-              </a>
-              <template v-if="post.group">
-                >
-                <a href="javascript:void(0)" class="hover:underline">
-                  {{ post.group.name }}
-                </a>
-              </template>
-            </h4>
-            <small class="text-grey-100">
-              {{ post.created_at }}
-            </small>
-          </div>
-      </div>
+      <PostUserHeader :post="post" />
       <div class="justify-self-end">
         <div class="text-right top-16">
             <Menu as="div" class="relative inline-block text-left">

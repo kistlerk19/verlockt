@@ -8,6 +8,9 @@ import {
   DialogTitle,
 } from '@headlessui/vue'
 import TextAreaInput from '@/Components/TextAreaInput.vue';
+import PostUserHeader from '@/Components/app/PostUserHeader.vue';
+import { XMarkIcon } from '@heroicons/vue/24/solid';
+import { useForm } from '@inertiajs/vue3';
 
 const props = defineProps({
     post: {
@@ -24,21 +27,27 @@ const show = computed({
 
 const emit = defineEmits(['update:modelValue'])
 
-// const isOpen = ref(true)
+function update()
+{
+  const form = useForm({
+    id: props.post.id,
+    body: props.post.body,
+  })
 
-function closeModal() {
-  show.value = false
-//   emit('update:modelValue', false)
+  form.put(route('post.update', props.post), {
+    onSuccess: () => {
+            form.reset()
+            show.value = false
+        }
+  })
 }
-function openModal() {
-  show.value = true
-}
+
 </script>
 
 <template>
   <teleport to='body'>
     <TransitionRoot appear :show="show" as="template">
-      <Dialog as="div" @close="closeModal" class="relative z-10">
+      <Dialog as="div" class="relative z-10">
         <TransitionChild
           as="template"
           enter="duration-300 ease-out"
@@ -69,20 +78,23 @@ function openModal() {
               >
                 <DialogTitle
                   as="h3"
-                  class="text-lg font-medium leading-6 text-gray-900"
+                  class="flex items-center justify-between px-4 py-3 text-lg font-medium leading-6 text-gray-900 bg-gray-200 rounded-lg"
                 >
                   Edit post
+                  <button @click="show = false" class="flex items-center justify-center px-2 py-2 text-sm transition rounded-full hover:bg-black/10">
+                    <XMarkIcon class="w-4 h-4 "/>
+                  </button>
                 </DialogTitle>
-                <div class="mt-2">
-                  <!-- <pre>{{ post }}</pre> -->
+                <div class="px-4 py-3 mt-2">
+                  <PostUserHeader :post="post" :show-time="false"  class="mb-3"/>
                   <TextAreaInput v-model="post.body" row="5" class="w-full mb-3"/>
                 </div>
 
-                <div class="mt-4">
+                <div class="px-4 py-3 mt-4">
                   <button
                     type="button"
-                    class="inline-flex justify-center px-4 py-2 text-sm font-medium text-blue-900 bg-blue-100 border border-transparent rounded-full hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                    @click="closeModal"
+                    class="w-full px-3 py-2 text-sm font-semibold text-gray-700 bg-indigo-200 rounded-full shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                    @click="update"
                   >
                     Save
                   </button>
