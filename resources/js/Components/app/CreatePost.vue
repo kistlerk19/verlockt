@@ -1,37 +1,49 @@
 <script setup>
 import { ref } from "vue";
 import TextAreaInput from "@/Components/TextAreaInput.vue";
-import { useForm } from "@inertiajs/vue3";
+import PostModal from "@/Components/app/PostModal.vue";
+import { useForm, usePage } from "@inertiajs/vue3";
 
-const postCreating = ref(false);
-const newPostForm = useForm({
-    body: ''
+
+const authUser = usePage().props.auth.user;
+const showModal = ref(false);
+const newPost = ref({
+    id: null,
+    body: '',
+    user: authUser
 })
 
-function submit(){
-    newPostForm.post(route('post.create'), {
-        onSuccess: () => {
-            newPostForm.reset()
-        }
-    })
+// const newPostForm = useForm({
+//     body: ''
+// })
+
+// function submit(){
+//     newPostForm.post(route('post.create'), {
+//         onSuccess: () => {
+//             newPostForm.reset()
+//         }
+//     })
+// }
+
+function showCreatePost()
+{
+    showModal.value = true
 }
 
 </script>
 
 <template>
   <div class="p-4 mb-4 bg-gray-100 rounded">
-    <TextAreaInput
-      @click="postCreating = true"
-      v-model="newPostForm.body"
+    <div
+      @click="showCreatePost"
       rows="1"
-      class="w-full mb-3"
-      placeholder="Type something here..."
-    />
+      class="w-full px-3 py-2 mb-3 text-gray-500 border-2 border-gray-300 rounded-md shadow-lg focus:border-indigo-500 focus:ring-indigo-500"
+    >Click to create post</div>
 
-    <div v-if="postCreating">
-      <div class="flex items-center justify-end mt-6 gap-x-6">
+    <div>
+      <!-- <div class="flex items-center justify-end mt-6 gap-x-6">
         <button
-          @click="postCreating = false"
+          @click="showCreatePost"
           type="button"
           class="text-sm font-semibold leading-6 text-gray-900 rounded-full"
         >
@@ -66,7 +78,9 @@ function submit(){
         >
           Submit
         </button>
-      </div>
+      </div> -->
     </div>
+
+    <PostModal :post="newPost" v-model="showModal" />
   </div>
 </template>

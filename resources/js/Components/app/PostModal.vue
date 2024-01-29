@@ -12,10 +12,13 @@ import PostUserHeader from '@/Components/app/PostUserHeader.vue';
 import { XMarkIcon } from '@heroicons/vue/24/solid';
 import { useForm } from '@inertiajs/vue3';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+// import BalloonEditor from '@ckeditor/ckeditor5-build-balloon';
+
 
 const editor = ClassicEditor
 const editorConfig = {
-    toolbar: ['heading', 'bold', 'italic', '|', 'undo', '|',  'link', 'numberedList', 'bulletedList', 'blockQuote', '|', 'outdent', 'indent' ]
+    toolbar: ['heading', 'bold', 'italic', '|', 'undo', '|',  'link', 'numberedList', 'bulletedList', 'blockQuote', '|', 'outdent', 'indent' ],
+    balloonToolbar: ['heading', 'bold', 'italic', '|', 'undo', '|',  'link', 'numberedList', 'bulletedList', 'blockQuote', '|', 'outdent', 'indent' ]
 }
 
 const props = defineProps({
@@ -56,12 +59,26 @@ function update() {
 //     body: props.post.body,
 //   })
 
-  form.put(route('post.update', props.post.id), {
-    preserveScroll: true,
-    onSuccess: () => {
-      show.value = false
+    if(form.id)
+    {
+        form.put(route('post.update', props.post.id), {
+            preserveScroll: true,
+            onSuccess: () => {
+            show.value = false
+            form.reset()
+            }
+        })
+    } else {
+        form.post(route('post.create'), {
+            preserveScroll: true,
+            onSuccess: () => {
+                show.value = false
+                form.reset()
+            }
+        })
     }
-  })
+
+
 }
 
 // onMounted(() => {
@@ -90,7 +107,7 @@ function update() {
                 class="w-full max-w-md p-6 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl">
                 <DialogTitle as="h3"
                   class="flex items-center justify-between px-4 py-3 text-lg font-medium leading-6 text-gray-900 bg-gray-200 rounded-lg">
-                  Edit post
+                  {{ form.id ? 'EDIT POST' : 'CREATE NEW POST' }}
                   <button @click="show = false"
                     class="flex items-center justify-center px-2 py-2 text-sm transition rounded-full hover:bg-black/10">
                     <XMarkIcon class="w-4 h-4 " />
