@@ -11,6 +11,12 @@ import TextAreaInput from '@/Components/TextAreaInput.vue';
 import PostUserHeader from '@/Components/app/PostUserHeader.vue';
 import { XMarkIcon } from '@heroicons/vue/24/solid';
 import { useForm } from '@inertiajs/vue3';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+
+const editor = ClassicEditor
+const editorConfig = {
+    toolbar: ['heading', 'bold', 'italic', '|', 'undo', '|',  'link', 'numberedList', 'bulletedList', 'blockQuote', '|', 'outdent', 'indent' ]
+}
 
 const props = defineProps({
   post: {
@@ -92,7 +98,8 @@ function update() {
                 </DialogTitle>
                 <div class="px-4 py-3 mt-2">
                   <PostUserHeader :post="post" :show-time="false" class="mb-3" />
-                  <TextAreaInput v-model="form.body" row="5" class="w-full mb-3" />
+                  <ckeditor :editor="editor" v-model="form.body" :config="editorConfig"></ckeditor>
+                  <!-- <TextAreaInput v-model="form.body" row="5" class="w-full mb-3" /> -->
                 </div>
 
                 <div class="px-4 py-3 mt-4">
