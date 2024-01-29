@@ -1,15 +1,15 @@
 <script setup>
 import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue";
 import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue'
-import { ChevronDownIcon, PencilIcon, EllipsisVerticalIcon } from '@heroicons/vue/20/solid';
+import { PencilIcon, EllipsisVerticalIcon } from '@heroicons/vue/20/solid';
 import { TrashIcon } from "@heroicons/vue/24/solid";
-import PostModal from "@/Components/app/PostModal.vue";
+
 import PostUserHeader from "@/Components/app/PostUserHeader.vue";
 import { ref } from "vue";
 
-const showEditModel = ref(false)
+const emit = defineEmits(['editClick'])
 
-defineProps({
+const props = defineProps({
   post: Object,
 })
 
@@ -17,6 +17,11 @@ const isImage = (attachment) => {
   const mime = attachment.mime.split("/");
   return mime[0].toLowerCase() === "image";
 };
+
+function openEditModal(){
+    emit('editClick', props.post)
+}
+
 </script>
 
 <template>
@@ -48,7 +53,7 @@ const isImage = (attachment) => {
                 <div class="px-1 py-1">
                     <MenuItem v-slot="{ active }">
                     <button
-                        @click="showEditModel = true"
+                        @click="openEditModal"
                         :class="[
                         active ? 'bg-indigo-600 text-white' : 'text-gray-900',
                         'group flex w-[100px] items-center rounded-md px-2 py-2 text-sm',
@@ -109,7 +114,7 @@ const isImage = (attachment) => {
         >
           <!-- download -->
           <button
-            class="absolute flex items-center justify-center w-8 h-8 text-gray-100 transition-all bg-gray-400 rounded opacity-0 cursor-pointer group-hover:opacity-100 hover:bg-gray-700 top-2 right-2"
+            class="absolute flex items-center justify-center w-8 h-8 text-gray-100 bg-gray-400 rounded opacity-0 cursor-pointer group-hover:opacity-100 hover:bg-gray-700 top-2 right-2"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -154,7 +159,7 @@ const isImage = (attachment) => {
 
     <div class="flex gap-2 text-gray-700">
       <button
-        class="flex items-center justify-center flex-1 gap-1 px-4 py-2 bg-gray-100 rounded-full hover:bg-gray-200"
+        class="flex items-center justify-center flex-1 gap-1 px-4 py-2 bg-gray-100 rounded-full hover:bg-indigo-300"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -169,7 +174,7 @@ const isImage = (attachment) => {
         Like
       </button>
       <button
-        class="flex items-center justify-center flex-1 gap-1 px-4 py-2 bg-gray-100 rounded-full hover:bg-gray-200"
+        class="flex items-center justify-center flex-1 gap-1 px-4 py-2 bg-gray-100 rounded-full hover:bg-indigo-300"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -188,8 +193,6 @@ const isImage = (attachment) => {
       </button>
     </div>
   </div>
-
-  <PostModal :post="post" v-model="showEditModel" />
 </template>
 
 <style scoped>

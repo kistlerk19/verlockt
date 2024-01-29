@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref, watch, onUpdated, reactive } from 'vue'
 import {
   TransitionRoot,
   TransitionChild,
@@ -13,12 +13,18 @@ import { XMarkIcon } from '@heroicons/vue/24/solid';
 import { useForm } from '@inertiajs/vue3';
 
 const props = defineProps({
-    post: {
-        type: Object,
-        required: true
-    },
-    modelValue: Boolean
+  post: {
+    type: Object,
+    required: true
+  },
+  modelValue: Boolean
 })
+
+const form = useForm({
+  id: null,
+  body: ''
+})
+
 
 const show = computed({
   get: () => props.modelValue,
@@ -27,20 +33,36 @@ const show = computed({
 
 const emit = defineEmits(['update:modelValue'])
 
-function update()
-{
-  const form = useForm({
-    id: props.post.id,
-    body: props.post.body,
-  })
+watch(() => props.post, () => {
+  form.id = props.post.id
+  form.body = props.post.body
+})
 
-  form.put(route('post.update', props.post), {
+// onUpdated(() => {
+//   console.log('***************************************************');
+//   console.log("Updated");
+//   console.log('***************************************************');
+// }),
+
+function update() {
+//   const form = useForm({
+//     id: props.post.id,
+//     body: props.post.body,
+//   })
+
+  form.put(route('post.update', props.post.id), {
+    preserveScroll: true,
     onSuccess: () => {
-            form.reset()
-            show.value = false
-        }
+      show.value = false
+    }
   })
 }
+
+// onMounted(() => {
+//   console.log('***************************************************');
+//   console.log(props.post);
+//   console.log('***************************************************');
+// })
 
 </script>
 
@@ -48,54 +70,35 @@ function update()
   <teleport to='body'>
     <TransitionRoot appear :show="show" as="template">
       <Dialog as="div" class="relative z-10">
-        <TransitionChild
-          as="template"
-          enter="duration-300 ease-out"
-          enter-from="opacity-0"
-          enter-to="opacity-100"
-          leave="duration-200 ease-in"
-          leave-from="opacity-100"
-          leave-to="opacity-0"
-        >
+        <TransitionChild as="template" enter="duration-300 ease-out" enter-from="opacity-0" enter-to="opacity-100"
+          leave="duration-200 ease-in" leave-from="opacity-100" leave-to="opacity-0">
           <div class="fixed inset-0 bg-black/25" />
         </TransitionChild>
 
         <div class="fixed inset-0 overflow-y-auto">
-          <div
-            class="flex items-center justify-center min-h-full p-4 text-center"
-          >
-            <TransitionChild
-              as="template"
-              enter="duration-300 ease-out"
-              enter-from="opacity-0 scale-95"
-              enter-to="opacity-100 scale-100"
-              leave="duration-200 ease-in"
-              leave-from="opacity-100 scale-100"
-              leave-to="opacity-0 scale-95"
-            >
+          <div class="flex items-center justify-center min-h-full p-4 text-center">
+            <TransitionChild as="template" enter="duration-300 ease-out" enter-from="opacity-0 scale-95"
+              enter-to="opacity-100 scale-100" leave="duration-200 ease-in" leave-from="opacity-100 scale-100"
+              leave-to="opacity-0 scale-95">
               <DialogPanel
-                class="w-full max-w-md p-6 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl"
-              >
-                <DialogTitle
-                  as="h3"
-                  class="flex items-center justify-between px-4 py-3 text-lg font-medium leading-6 text-gray-900 bg-gray-200 rounded-lg"
-                >
+                class="w-full max-w-md p-6 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl">
+                <DialogTitle as="h3"
+                  class="flex items-center justify-between px-4 py-3 text-lg font-medium leading-6 text-gray-900 bg-gray-200 rounded-lg">
                   Edit post
-                  <button @click="show = false" class="flex items-center justify-center px-2 py-2 text-sm transition rounded-full hover:bg-black/10">
-                    <XMarkIcon class="w-4 h-4 "/>
+                  <button @click="show = false"
+                    class="flex items-center justify-center px-2 py-2 text-sm transition rounded-full hover:bg-black/10">
+                    <XMarkIcon class="w-4 h-4 " />
                   </button>
                 </DialogTitle>
                 <div class="px-4 py-3 mt-2">
-                  <PostUserHeader :post="post" :show-time="false"  class="mb-3"/>
-                  <TextAreaInput v-model="post.body" row="5" class="w-full mb-3"/>
+                  <PostUserHeader :post="post" :show-time="false" class="mb-3" />
+                  <TextAreaInput v-model="form.body" row="5" class="w-full mb-3" />
                 </div>
 
                 <div class="px-4 py-3 mt-4">
-                  <button
-                    type="button"
+                  <button type="button"
                     class="w-full px-3 py-2 text-sm font-semibold text-gray-700 bg-indigo-200 rounded-full shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                    @click="update"
-                  >
+                    @click="update">
                     Save
                   </button>
                 </div>
