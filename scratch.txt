@@ -1,0 +1,23 @@
+<template v-for="(atFile, index) of attachmentFiles.slice(0, 4)" :key="atFile.id">
+                                            <div
+                                                class="relative flex flex-col items-center justify-center text-gray-500 bg-blue-200 rounded group aspect-square">
+
+                                                <div v-if="index === 3" class="absolute top-0 bottom-0 left-0 right-0 z-10 flex items-center justify-center text-xl text-white bg-black/60">
+                                                    + {{ attachmentFiles.length - 4 }}
+                                                </div>
+
+                                                <button @click="removeFile(atFile)"
+                                                    class="absolute z-20 flex items-center p-2 text-xs text-white rounded-full opacity-0 right-1 top-1 bg-red-700/40 group-hover:opacity-100 hover:bg-red-900/80">
+                                                    <XMarkIcon class="w-5 h-5" />
+                                                    <!-- Cancel Avatar -->
+                                                </button>
+                                                <img v-if="isImage(atFile.file)" :src="atFile.url"
+                                                    class="object-cover rounded aspect-square" />
+
+                                                <template v-else>
+                                                    <!-- file -->
+                                                    <DocumentIcon class="w-12 h-12 mb-3" />
+                                                    <small class="text-center">{{ atFile.file.name }}</small>
+                                                </template>
+                                            </div>
+                                        </template>
