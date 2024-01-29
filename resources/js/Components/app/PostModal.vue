@@ -42,7 +42,8 @@ const attachmentFiles = ref([])
 
 const form = useForm({
     id: null,
-    body: ''
+    body: '',
+    attachments: []
 })
 
 
@@ -56,30 +57,34 @@ const emit = defineEmits(['update:modelValue'])
 watch(() => props.post, () => {
     form.id = props.post.id
     form.body = props.post.body
+    console.log(props.post);
 })
 
 const closeModal = () => {
     show.value = false
+    resetModal()
+}
+
+const resetModal = () => {
     form.reset()
     attachmentFiles.value = []
 }
 
 function update() {
+    form.attachments = attachmentFiles.value.map(atFile => atFile.file)
 
     if (form.id) {
         form.put(route('post.update', props.post.id), {
             preserveScroll: true,
             onSuccess: () => {
-                show.value = false
-                form.reset()
+                closeModal()
             }
         })
     } else {
         form.post(route('post.create'), {
             preserveScroll: true,
             onSuccess: () => {
-                show.value = false
-                form.reset()
+                closeModal()
             }
         })
     }
@@ -125,13 +130,13 @@ function removeFile(atFile) {
 <template>
     <teleport to='body'>
         <TransitionRoot appear :show="show" as="template">
-            <Dialog as="div" class="relative z-10">
+            <Dialog as="div" class="relative z-50">
                 <TransitionChild as="template" enter="duration-300 ease-out" enter-from="opacity-0" enter-to="opacity-100"
                     leave="duration-200 ease-in" leave-from="opacity-100" leave-to="opacity-0">
                     <div class="fixed inset-0 bg-black/25" />
                 </TransitionChild>
 
-                <div class="fixed inset-0 overflow-y-auto">
+                <div class="fixed inset-0 w-screen overflow-y-auto">
                     <div class="flex items-center justify-center min-h-full p-4 text-center">
                         <TransitionChild as="template" enter="duration-300 ease-out" enter-from="opacity-0 scale-95"
                             enter-to="opacity-100 scale-100" leave="duration-200 ease-in" leave-from="opacity-100 scale-100"
@@ -149,7 +154,7 @@ function removeFile(atFile) {
                                 <div class="px-4 py-3 mt-2">
                                     <PostUserHeader :post="post" :show-time="false" class="mb-3" />
                                     <ckeditor :editor="editor" v-model="form.body" :config="editorConfig"></ckeditor>
-                                    <div class="grid grid-cols-2 gap-3 my-3 lg:grid-cols-3">
+                                    <div class="grid gap-3 my-3" :class="attachmentFiles.length === 1 ? 'grid-cols-1' : 'grid-cols-2'">
                                         <template v-for="atFile of attachmentFiles" :key="atFile.id">
                                             <div
                                                 class="relative flex flex-col items-center justify-center text-gray-500 bg-blue-200 rounded group aspect-square">
@@ -159,7 +164,7 @@ function removeFile(atFile) {
                                                     <!-- Cancel Avatar -->
                                                 </button>
                                                 <img v-if="isImage(atFile.file)" :src="atFile.url"
-                                                    class="object-cover rounded aspect-square" />
+                                                    class="object-contain rounded aspect-square" />
 
                                                 <template v-else>
                                                     <!-- file -->
@@ -173,14 +178,14 @@ function removeFile(atFile) {
 
                                 <div class="flex gap-2 px-4 py-3 mt-4">
                                     <button type="button"
-                                        class="relative w-20 justify-center items-center flex rounded-full border-none px-2.5 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-50">
+                                        class="relative w-full justify-center items-center flex rounded-full border-none px-2.5 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-50">
                                         <PaperClipIcon class="w-6 h-6 mr-2" />
 
                                         <input @click.stop @change="onFileAttached" type="file" multiple
                                             class="absolute top-0 bottom-0 left-0 right-0 opacity-0" />
                                     </button>
                                     <button type="button"
-                                        class="w-20 px-3 py-2 text-sm font-semibold text-gray-700 bg-indigo-200 rounded-full shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                        class="w-full px-3 py-2 text-sm font-semibold text-gray-700 bg-indigo-200 rounded-full shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                                         @click="update">
                                         Save
                                     </button>

@@ -2,11 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use App\Models\Post;
+use App\Models\User;
 use Illuminate\Http\Request;
-use App\Http\Requests\StorePostRequest;
-use App\Http\Requests\UpdatePostRequest;
+use App\Models\PostAttachment;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\StorePostRequest;
+use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\UpdatePostRequest;
 
 class PostController extends Controller
 {
@@ -14,11 +19,42 @@ class PostController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StorePostRequest $request)
+    public function store(StorePostRequest $request, User $user)
     {
+        $user = $request->user();
         $data = $request->validated();
 
-        Post::create($data);
+        DB::beginTransaction();
+
+        $filePaths = [];
+
+        try {
+            $post = Post::create($data);
+
+            $files = $data['attachments'] ?? [];
+
+            foreach($files as $file)
+            {
+                $path = $file->store('images/'.$user->id . '/attachments', 'public');
+                $filePaths[] = $path;
+                PostAttachment::create([
+                    'post_id' => $post->id,
+                    'name' => $file->getClientOriginalName(),
+                    'path' => $path,
+                    'mime' => $file->getMimeType(),
+                    'size' => $file->getSize(),
+                    'created_by' => $user->id,
+                ]);
+            }
+
+            DB::commit();
+        } catch (Exception $e) {
+            foreach ($filePaths as $path) {
+                Storage::disk('public')->delete($path);
+            }
+            DB::rollBack();
+            throw $e;
+        }
 
         return back();
     }

@@ -2,7 +2,7 @@
 import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue";
 import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue'
 import { PencilIcon, EllipsisVerticalIcon } from '@heroicons/vue/20/solid';
-import { ChatBubbleBottomCenterTextIcon, HandThumbUpIcon, TrashIcon } from "@heroicons/vue/24/solid";
+import { ChatBubbleBottomCenterTextIcon, HandThumbUpIcon, TrashIcon, ArrowDownTrayIcon } from "@heroicons/vue/24/outline";
 import {isImage} from '@/helpers.js'
 
 import PostUserHeader from "@/Components/app/PostUserHeader.vue";
@@ -115,28 +115,21 @@ function deletePost()
         </template>
       </Disclosure>
     </div>
+    <!-- <pre>{{ post.attachments }}</pre> -->
 
-    <div class="grid grid-cols-2 gap-3 mb-3 lg:grid-cols-3">
-      <template v-for="attachment of post.attachments" :key="attachment.id">
+    <div class="grid gap-3 mb-3 " :class="post.attachments.length === 1 ? 'grid-cols-1' : 'grid-cols-2'">
+      <template v-for="(attachment, index) of post.attachments.slice(0, 4)" :key="attachment.id">
         <div
           class="relative flex flex-col items-center justify-center text-gray-500 bg-blue-200 rounded group aspect-square"
         >
+        <div v-if="index === 3" class="absolute top-0 bottom-0 left-0 right-0 z-10 flex items-center justify-center text-xl text-white bg-black/60">
+            + {{ post.attachments.length - 4 }}
+        </div>
           <!-- download -->
           <button
-            class="absolute flex items-center justify-center w-8 h-8 text-gray-100 bg-gray-400 rounded opacity-0 cursor-pointer group-hover:opacity-100 hover:bg-gray-700 top-2 right-2"
+            class="absolute flex items-center justify-center w-8 h-8 text-white rounded opacity-0 cursor-pointer bg-black/20 group-hover:opacity-100 hover:bg-black/80 top-2 right-2"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              class="w-4 h-4"
-            >
-              <path
-                fill-rule="evenodd"
-                d="M12 2.25a.75.75 0 0 1 .75.75v11.69l3.22-3.22a.75.75 0 1 1 1.06 1.06l-4.5 4.5a.75.75 0 0 1-1.06 0l-4.5-4.5a.75.75 0 1 1 1.06-1.06l3.22 3.22V3a.75.75 0 0 1 .75-.75Zm-9 13.5a.75.75 0 0 1 .75.75v2.25a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5V16.5a.75.75 0 0 1 1.5 0v2.25a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V16.5a.75.75 0 0 1 .75-.75Z"
-                clip-rule="evenodd"
-              />
-            </svg>
+          <ArrowDownTrayIcon class="p-2"/>
           </button>
 
           <img
