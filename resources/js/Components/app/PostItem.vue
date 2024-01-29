@@ -6,6 +6,7 @@ import { TrashIcon } from "@heroicons/vue/24/solid";
 
 import PostUserHeader from "@/Components/app/PostUserHeader.vue";
 import { ref } from "vue";
+import { router } from "@inertiajs/vue3";
 
 const emit = defineEmits(['editClick'])
 
@@ -20,6 +21,16 @@ const isImage = (attachment) => {
 
 function openEditModal(){
     emit('editClick', props.post)
+}
+
+function deletePost()
+{
+    if(window.confirm('Are you sure you want to delete this post?'))
+    {
+        router.delete(route('post.delete', props.post), {
+            preserveScroll: true
+        })
+    }
 }
 
 </script>
@@ -71,6 +82,7 @@ function openEditModal(){
                 <div class="px-1 py-1">
                     <MenuItem v-slot="{ active }">
                     <button
+                        @click="deletePost"
                         :class="[
                         active ? 'bg-indigo-600 text-white' : 'text-gray-900',
                         'group flex w-[100px] items-center rounded-md px-2 py-2 text-sm',
