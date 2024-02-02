@@ -3,10 +3,14 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Validation\Rules\File;
 
 class StorePostRequest extends FormRequest
 {
+    public static array $extensions = ['jpg', 'jpeg', 'png', 'webp',
+        'gif', 'mp3', 'mp4', 'wav', 'doc', 'docx', 'ppt',
+        'pdf', 'csv', 'xls', 'xlsx', 'pptx', 'zip'];
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -24,12 +28,20 @@ class StorePostRequest extends FormRequest
     {
         return [
             'body' => ['nullable', 'string'],
-            'attachments' => 'array|max:10',
+            'attachments' => [
+                'array',
+                'max:10',
+                function ($attribute, $value, $fail) {
+                    $totalSize = collect($value)->sum(fn(UploadedFile $file) => $file->getSize());
+                    // dd($totalSize);
+                    if ($totalSize > 1000000) {
+                        $fail('The total size of all files must not exceed 1GB.');
+                    }
+                },
+            ],
             'attachments.*' => [
                 'file',
-                File::types(['jpg', 'jpeg', 'png', 'webp',
-                 'gif', 'mp3', 'mp4', 'wav', 'doc', 'docx', 'ppt',
-                 'pdf', 'csv', 'xls', 'xlsx', 'pptx', 'zip'])->max(500 * 1024 * 1024),
+                File::types(self::$extensions)->max(500 * 1024 * 1024),
             ],
             'user_id' => ['numeric'],
         ];

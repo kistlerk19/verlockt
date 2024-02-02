@@ -38,7 +38,7 @@ function deletePost()
       <PostUserHeader :post="post" />
       <div class="justify-self-end">
         <div class="text-right top-16">
-            <Menu as="div" class="relative inline-block text-left">
+            <Menu as="div" class="relative z-10 inline-block text-left">
             <div>
                 <MenuButton
                 class="flex items-center justify-center px-2 py-2 text-sm transition rounded-full hover:bg-black/10"

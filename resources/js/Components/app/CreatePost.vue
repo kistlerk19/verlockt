@@ -25,7 +25,7 @@ const newPost = ref({
 //     })
 // }
 
-function showCreatePost()
+function showCreatePostModal()
 {
     showModal.value = true
 }
@@ -35,13 +35,13 @@ function showCreatePost()
 <template>
   <div class="p-4 mb-4 bg-gray-100 rounded">
     <div
-      @click="showCreatePost"
+      @click="showCreatePostModal"
       rows="1"
       class="w-full px-3 py-2 mb-3 text-gray-500 border-2 border-gray-300 rounded-md shadow-lg focus:border-indigo-500 focus:ring-indigo-500"
     >Click to create post</div>
 
-    <div>
-      <!-- <div class="flex items-center justify-end mt-6 gap-x-6">
+    <!-- <div>
+      <div class="flex items-center justify-end mt-6 gap-x-6">
         <button
           @click="showCreatePost"
           type="button"
@@ -78,8 +78,8 @@ function showCreatePost()
         >
           Submit
         </button>
-      </div> -->
-    </div>
+      </div>
+    </div> -->
 
     <PostModal :post="newPost" v-model="showModal" />
   </div>

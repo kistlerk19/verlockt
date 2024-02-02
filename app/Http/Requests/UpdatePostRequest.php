@@ -13,8 +13,11 @@ class UpdatePostRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        $post = Post::where('id', $this->input('id'))->where('user_id', Auth::id())->first();
-        return !!$post; // if the post exists returns true, else return false
+        $post = $this->route('post');
+
+        return $post->user_id == Auth::id();
+
+        //return !!$post; // if the post exists returns true, else return false
     }
 
     /**

@@ -21,3 +21,44 @@
                                                 </template>
                                             </div>
                                         </template>
+
+
+                                        <!-- Duplicate -->
+                  <div
+                    class="grid gap-3 my-3"
+                    :class="
+                    computedAttachments.length === 1
+                        ? 'grid-cols-1'
+                        : 'grid-cols-2'
+                    "
+                  >
+                    <template
+                      v-for="(atFile, index) of computedAttachments"
+                      :key="atFile.id"
+                    >
+                      <div
+                        class="relative flex flex-col items-center justify-center text-gray-500 bg-blue-200 rounded group aspect-square"
+                      >
+                        <button
+                          @click="removeFile(atFile)"
+                          class="absolute flex items-center p-2 text-xs text-white rounded-full opacity-0 right-1 top-1 bg-red-700/40 group-hover:opacity-100 hover:bg-red-900/80"
+                        >
+                          <XMarkIcon class="w-5 h-5" />
+                          <!-- Cancel Avatar -->
+                        </button>
+                        <img
+                          v-if="isImage(atFile)"
+                          :src="atFile.url"
+                          class="object-contain rounded aspect-square"
+                        />
+
+                        <template v-else>
+                          <!-- file -->
+                          <DocumentIcon class="w-12 h-12 mb-3" />
+                          <small class="text-center">{{
+                            atFile.name
+                          }}</small>
+                        </template>
+                      </div>
+                    </template>
+                  </div>
