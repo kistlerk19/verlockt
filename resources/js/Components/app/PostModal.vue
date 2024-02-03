@@ -174,7 +174,7 @@ function undoDelete(atFile)
               >
                 <DialogTitle
                   as="h3"
-                  class="flex items-center justify-between px-4 py-3 text-lg font-medium leading-6 text-gray-900 bg-gray-200 rounded-lg"
+                  class="flex items-center justify-between px-4 py-3 text-lg font-medium leading-6 text-gray-900 bg-gray-200 rounded-full"
                 >
                   {{ post.id ? "EDIT POST" : "CREATE NEW POST" }}
                   <button
