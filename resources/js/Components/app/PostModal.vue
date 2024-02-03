@@ -9,10 +9,9 @@ import {
 } from "@headlessui/vue";
 import TextAreaInput from "@/Components/TextAreaInput.vue";
 import PostUserHeader from "@/Components/app/PostUserHeader.vue";
-import { DocumentIcon, XMarkIcon } from "@heroicons/vue/24/solid";
+import { DocumentIcon, XMarkIcon, PaperClipIcon } from "@heroicons/vue/24/solid";
 import { useForm } from "@inertiajs/vue3";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
-import { PaperClipIcon } from "@heroicons/vue/24/solid";
 import { isImage } from "@/helpers";
 import { ArrowUturnLeftIcon } from "@heroicons/vue/24/outline";
 // import BalloonEditor from '@ckeditor/ckeditor5-build-balloon';
@@ -69,7 +68,9 @@ const closeModal = () => {
 const resetModal = () => {
   form.reset();
   attachmentFiles.value = [];
-  props.post.attachments.forEach(file => file.deleted = false)
+  if (props.post.attachments) {
+        props.post.attachments.forEach(file => file.deleted = false)
+    }
 };
 
 function update() {
