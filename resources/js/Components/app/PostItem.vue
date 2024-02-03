@@ -122,7 +122,7 @@ function deletePost()
         <div
           class="relative flex flex-col items-center justify-center text-gray-500 bg-blue-200 rounded group aspect-square"
         >
-        <div v-if="index === 3" class="absolute top-0 bottom-0 left-0 right-0 z-10 flex items-center justify-center text-xl text-white bg-black/60">
+        <div v-if="index === 3 && post.attachments.length > 4" class="absolute top-0 bottom-0 left-0 right-0 z-10 flex items-center justify-center text-xl text-white bg-black/60">
             + {{ post.attachments.length - 4 }}
         </div>
           <!-- download -->

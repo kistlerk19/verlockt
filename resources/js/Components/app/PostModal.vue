@@ -49,12 +49,6 @@ const show = computed({
 
 const computedAttachments = computed(() => {
     return [...attachmentFiles.value, ...(props.post.attachments || [])];
-    // if(props.post)
-    // {
-    //     return [...attachmentFiles.value, ...props.post.attachments]
-    // }
-
-    // return attachmentFiles.value
 })
 
 const emit = defineEmits(["update:modelValue", "hide"]);
@@ -109,7 +103,7 @@ async function onFileAttached($event) {
   }
 
   $event.target.value = null;
-  console.log(attachmentFiles.value);
+//   console.log(attachmentFiles.value);
 }
 
 async function readFile(file) {

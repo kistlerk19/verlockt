@@ -3,10 +3,13 @@
 namespace App\Http\Requests;
 
 use App\Models\Post;
-use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
+use App\Http\Requests\StorePostRequest;
+use Illuminate\Foundation\Http\FormRequest;
 
-class UpdatePostRequest extends FormRequest
+class UpdatePostRequest extends StorePostRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -20,16 +23,12 @@ class UpdatePostRequest extends FormRequest
         //return !!$post; // if the post exists returns true, else return false
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
-        return [
-            'body' => ['nullable', 'string'],
-            'user_id' => ['numeric'],
-        ];
+        return array_merge(parent::rules(), [
+            'deleted_file_ids' => 'array',
+            'deleted_file_ids.*' => 'numeric',
+        ]);
     }
+
 }
