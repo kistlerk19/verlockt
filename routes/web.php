@@ -29,11 +29,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    Route::post('/profile/profile-image', [ProfileController::class, 'updateProfileImage'])->name('profile.image.update');
+    Route::post('/profile/profile-image', [ProfileController::class, 'updateProfileImage'])
+        ->name('profile.image.update');
 
     Route::post('post', [PostController::class, 'store'])->name('post.create');
     Route::put('post/{post}', [PostController::class, 'update'])->name('post.update');
     Route::delete('post/{post}', [PostController::class, 'destroy'])->name('post.delete');
+
+    Route::get('posts/download/{attachment}', [PostController::class, 'download'])
+        ->name('post.download');
 });
 
 require __DIR__.'/auth.php';

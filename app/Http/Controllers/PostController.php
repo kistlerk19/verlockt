@@ -33,8 +33,7 @@ class PostController extends Controller
 
             $files = $data['attachments'] ?? [];
 
-            foreach($files as $file)
-            {
+            foreach ($files as $file) {
                 $path = $file->store('images/' . $user->id . '/' . 'attachments/' . $post->id, 'public');
                 $filePaths[] = $path;
                 PostAttachment::create([
@@ -80,14 +79,13 @@ class PostController extends Controller
                 ->where('post_id', $post->id)
                 ->whereIn('id', $deleted_ids)
                 ->get();
-            foreach($attachments as $attachment) {
+            foreach ($attachments as $attachment) {
                 $attachment->delete();
             }
 
             $files = $data['attachments'] ?? [];
 
-            foreach($files as $file)
-            {
+            foreach ($files as $file) {
                 $path = $file->store('images/' . $user->id . '/' . 'attachments/' . $post->id, 'public');
                 $filePaths[] = $path;
                 PostAttachment::create([
@@ -121,13 +119,17 @@ class PostController extends Controller
 
         $id = Auth::id();
 
-        if($post->user_id !== $id)
-        {
+        if($post->user_id !== $id) {
             return response("You do not have permission to delete this post.", 403);
         }
 
         $post->delete();
 
         return back();
+    }
+
+    public function download(PostAttachment $attachment)
+    {
+        return response()->download(Storage::disk('public')->path($attachment->path), $attachment->name);
     }
 }
