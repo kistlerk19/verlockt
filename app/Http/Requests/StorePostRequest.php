@@ -8,7 +8,7 @@ use Illuminate\Validation\Rules\File;
 
 class StorePostRequest extends FormRequest
 {
-    public static array $extensions = ['jpg', 'jpeg', 'png', 'webp',
+    public static array $extensions = ['jpg', 'jpeg', 'png', 'webp', 'svg',
         'gif', 'mp3', 'mp4', 'wav', 'doc', 'docx', 'ppt',
         'pdf', 'csv', 'xls', 'xlsx', 'pptx', 'zip'];
     /**
@@ -28,10 +28,7 @@ class StorePostRequest extends FormRequest
     {
         return [
             'body' => ['nullable', 'string'],
-            'attachments' => [
-                'array',
-                'max:10',
-                ],
+            'attachments' => 'array|max:10',
             'attachments.*' => [
                 'file',
                 File::types(self::$extensions)->max(500 * 1024 * 1024),
@@ -46,6 +43,13 @@ class StorePostRequest extends FormRequest
             'user_id' => auth()->user()->id,
             'body' => $this->input('body') ?: "",
         ]);
+    }
+
+    public function messages()
+    {
+        return [
+            'attachments.*' => "Invalid file"
+        ];
     }
 }
 // function ($attribute, $value, $fail) {

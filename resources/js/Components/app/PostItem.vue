@@ -133,7 +133,7 @@ function previewAttachment(index)
             + {{ post.attachments.length - 4 }}
         </div>
           <!-- download -->
-          <a
+          <a @click.stop
             :href="route('post.download', attachment)"
             class="absolute flex items-center justify-center w-8 h-8 text-white rounded opacity-0 cursor-pointer bg-black/20 group-hover:opacity-100 hover:bg-black/80 top-2 right-2"
           >

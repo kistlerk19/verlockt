@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, ref, watch, onUpdated, reactive } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import {
   TransitionRoot,
   TransitionChild,
@@ -7,14 +7,12 @@ import {
   DialogPanel,
   DialogTitle,
 } from "@headlessui/vue";
-import TextAreaInput from "@/Components/TextAreaInput.vue";
 import PostUserHeader from "@/Components/app/PostUserHeader.vue";
 import { DocumentIcon, XMarkIcon, PaperClipIcon } from "@heroicons/vue/24/solid";
-import { useForm } from "@inertiajs/vue3";
+import { useForm, usePage } from "@inertiajs/vue3";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { isImage } from "@/helpers";
 import { ArrowUturnLeftIcon } from "@heroicons/vue/24/outline";
-// import BalloonEditor from '@ckeditor/ckeditor5-build-balloon';
 
 const editor = ClassicEditor;
 const editorConfig = {
@@ -32,7 +30,11 @@ const props = defineProps({
   modelValue: Boolean,
 });
 
+const attachmentExtensions = usePage().props.attachmentExtensions;
+
 const attachmentFiles = ref([]);
+const attachmentErrors = ref([]);
+const extWarning = ref(false)
 
 const form = useForm({
   body: "",
@@ -68,6 +70,7 @@ const closeModal = () => {
 const resetModal = () => {
   form.reset();
   attachmentFiles.value = [];
+  extWarning.value = false
   if (props.post.attachments) {
         props.post.attachments.forEach(file => file.deleted = false)
     }
@@ -83,6 +86,9 @@ function update() {
       onSuccess: () => {
         closeModal();
       },
+      onError: (errors) => {
+        processErrors(errors)
+      }
     });
   } else {
     form.post(route("post.create"), {
@@ -90,12 +96,32 @@ function update() {
       onSuccess: () => {
         closeModal();
       },
+      onError: (errors) => {
+        processErrors(errors)
+      }
     });
   }
 }
 
+function processErrors(errors){
+    for (const key in errors)
+    {
+        if(key.includes('.')){
+            const  [, index] = key.split('.');
+            attachmentErrors.value[index] = errors[key]
+        }
+    }
+}
+
 async function onFileAttached($event) {
+  extWarning.value = false
   for (const file of $event.target.files) {
+    let parts = file.name.split('.')
+    let ext = parts.pop().toLowerCase()
+    if(!attachmentExtensions.includes(ext))
+    {
+      extWarning.value = true
+    }
     const atFile = {
       file,
       url: await readFile(file),
@@ -171,7 +197,7 @@ function undoDelete(atFile)
               leave-to="opacity-0 scale-95"
             >
               <DialogPanel
-                class="w-full max-w-md p-6 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl"
+                class="w-full max-w-[800px] p-6 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl"
               >
                 <DialogTitle
                   as="h3"
@@ -196,6 +222,9 @@ function undoDelete(atFile)
                     v-model="form.body"
                     :config="editorConfig"
                   ></ckeditor>
+                  <div v-if="extWarning" class="px-3 py-2 mt-3 text-gray-800 border-l-4 bg-amber-100 border-amber-500">
+                    Accepted file types: <small>{{ attachmentExtensions.join(', ') }}</small>
+                  </div>
                   <div
                     class="grid gap-3 my-3"
                     :class="
@@ -204,12 +233,13 @@ function undoDelete(atFile)
                         : 'grid-cols-2'
                     "
                   >
-                    <template
+                    <div
                       v-for="(atFile, index) of computedAttachments"
                       :key="atFile.id"
                     >
                     <div
-                        class="relative flex flex-col items-center justify-center text-gray-500 bg-blue-200 rounded group aspect-square"
+                        class="relative flex flex-col items-center justify-center text-gray-500 bg-blue-200 border-2 rounded group aspect-square"
+                        :class="attachmentErrors[index] ? 'border-red-500' : ''"
                       >
                       <div v-if="atFile.deleted" class="absolute bottom-0 left-0 right-0 z-10 flex items-center justify-between px-3 py-2 text-sm text-white bg-black">
                         To be deleted.
@@ -228,7 +258,7 @@ function undoDelete(atFile)
                           class="object-contain rounded aspect-square" :class="atFile.deleted ? 'opacity-20' : ''"
                         />
 
-                        <div class="flex flex-col items-center justify-center" :class="atFile.deleted ? 'opacity-20' : ''" v-else>
+                        <div class="flex flex-col items-center justify-center px-3" :class="atFile.deleted ? 'opacity-20' : ''" v-else>
                           <!-- file -->
                           <DocumentIcon class="w-12 h-12 mb-3" />
                           <small class="text-center">{{
@@ -236,7 +266,8 @@ function undoDelete(atFile)
                           }}</small>
                         </div>
                       </div>
-                    </template>
+                      <small class="text-sm text-red-500">{{ attachmentErrors[index] }}</small>
+                    </div>
                   </div>
 
 

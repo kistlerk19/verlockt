@@ -71,6 +71,7 @@ const closeModal = () => {
           >
             <TransitionChild
               as="template"
+              class="w-full h-full"
               enter="duration-300 ease-out"
               enter-from="opacity-0 scale-95"
               enter-to="opacity-100 scale-100"
@@ -79,13 +80,13 @@ const closeModal = () => {
               leave-to="opacity-0 scale-95"
             >
               <DialogPanel
-                class="flex flex-col w-full p-6 overflow-hidden text-left align-middle transition-all transform bg-white rounded shadow-xl"
+                class="flex flex-col w-full p-6 overflow-hidden text-left align-middle transition-all transform shadow-xl bg-slate-800"
               >
               <button
                 @click="closeModal"
-                class="absolute z-30 flex items-center justify-center px-2 py-2 text-sm transition rounded-full right-3 top-3 hover:bg-black/10"
+                class="absolute z-30 flex items-center justify-center px-2 py-2 text-sm text-gray-200 transition rounded-full right-3 top-3 hover:bg-black/20"
                 >
-                <XMarkIcon class="w-4 h-4" />
+                <XMarkIcon class="w-10 h-10" />
                 </button>
                 <div class="relative h-full bg-slate-800 group">
                     <div @click="prev" class="absolute left-0 flex items-center w-16 h-full text-white opacity-0 cursor-pointer group-hover:opacity-100 bg-black/20">
