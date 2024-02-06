@@ -3,9 +3,7 @@
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProfileController;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,7 +14,7 @@ use Inertia\Inertia;
 | routes are loaded by the RouteServiceProvider within a group which
 | contains the "web" middleware group. Now create something great!
 |
-*/
+ */
 
 Route::get('/', [HomeController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 Route::get('/u/{user:username}', [ProfileController::class, 'index'])->name('profile');
@@ -38,6 +36,9 @@ Route::middleware('auth')->group(function () {
 
     Route::get('posts/download/{attachment}', [PostController::class, 'download'])
         ->name('post.download');
+
+    Route::post('posts/{post}/reaction', [PostController::class, 'postReaction'])
+        ->name('post.reaction');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

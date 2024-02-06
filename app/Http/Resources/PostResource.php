@@ -22,6 +22,8 @@ class PostResource extends JsonResource
             'user' => new UserResource($this->user),
             'group' => $this->group,
             'attachments' => PostAttachmentResource::collection($this->attachments),
+            'impressions' => $this->reactions_count,
+            'user_has_impression' => $this->reactions->count() > 0
         ];
     }
 }

@@ -10,7 +10,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Post extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
+    use SoftDeletes;
 
     protected $fillable = ['body', 'user_id'];
 
@@ -25,5 +26,9 @@ class Post extends Model
     public function attachments(): HasMany
     {
         return $this->hasMany(PostAttachment::class)->latest();
+    }
+    public function reactions()
+    {
+        return $this->hasMany(PostReaction::class)->latest();
     }
 }

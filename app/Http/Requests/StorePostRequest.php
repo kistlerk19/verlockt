@@ -11,19 +11,12 @@ class StorePostRequest extends FormRequest
     public static array $extensions = ['jpg', 'jpeg', 'png', 'webp', 'svg',
         'gif', 'mp3', 'mp4', 'wav', 'doc', 'docx', 'ppt', 'epub',
         'pdf', 'csv', 'xls', 'xlsx', 'pptx', 'zip'];
-    /**
-     * Determine if the user is authorized to make this request.
-     */
+
     public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
@@ -31,13 +24,13 @@ class StorePostRequest extends FormRequest
             'attachments' => [
                 'array',
                 'max:50',
-                function ($value, $fail) {
-                    $totalSize = collect($value)->sum(fn(UploadedFile $file) => $file->getSize());
-                    dd($totalSize);
-                    if ($totalSize > 1 * 1024 * 1024 * 1024) {
-                        $fail("The total size of all files must not exceed 1GB.");
-                    }
-                }
+                // function ($value, $fail) {
+                //     $totalSize = collect($value)->sum(fn(UploadedFile $file) => $file->getSize());
+                //     dd($totalSize);
+                //     if ($totalSize > 1 * 1024 * 1024 * 1024) {
+                //         $fail("The total size of all files must not exceed 1GB.");
+                //     }
+                // }
             ],
             'attachments.*' => [
                 'file',

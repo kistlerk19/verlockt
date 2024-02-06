@@ -5,9 +5,10 @@ import { PencilIcon, EllipsisVerticalIcon } from '@heroicons/vue/24/solid';
 import { DocumentIcon } from '@heroicons/vue/24/outline';
 import { ChatBubbleBottomCenterTextIcon, HandThumbUpIcon, TrashIcon, ArrowDownTrayIcon } from "@heroicons/vue/24/outline";
 import {isImage} from '@/helpers.js'
+import { router } from "@inertiajs/vue3";
 
 import PostUserHeader from "@/Components/app/PostUserHeader.vue";
-import { router } from "@inertiajs/vue3";
+import axiosClient from "@/axiosClient.js"
 
 const emit = defineEmits(['editClick', 'attachmentClick'])
 
@@ -36,6 +37,15 @@ function previewAttachment(index)
     emit('attachmentClick', props.post, index);
 }
 
+function sendReaction()
+{
+    axiosClient.post(route('post.reaction', props.post), {
+        reaction: 'like'
+    }).then(({data}) => {
+        props.post.user_has_impression = data.user_has_impression
+        props.post.impressions = data.impressions
+    })
+}
 </script>
 
 <template>
@@ -157,10 +167,15 @@ function previewAttachment(index)
 
     <div class="flex gap-2 text-gray-700">
       <button
-        class="flex items-center justify-center flex-1 gap-1 px-4 py-2 bg-gray-100 rounded-full hover:bg-indigo-300"
+      @click="sendReaction"
+      :class="[
+        post.user_has_impression ? 'bg-indigo-300 hover:bg-indigo-100' : 'bg-gray-100 hover:bg-indigo-300'
+      ]"
+        class="flex items-center justify-center flex-1 gap-1 px-4 py-2 rounded-full "
       >
       <HandThumbUpIcon class="w-6 h-6" />
-        Like
+        <span class="mr-2">{{ post.impressions }}</span>
+        {{ post.has_impression ? 'Unlike' : 'Like' }}
       </button>
       <button
         class="flex items-center justify-center flex-1 gap-1 px-4 py-2 bg-gray-100 rounded-full hover:bg-indigo-300"
