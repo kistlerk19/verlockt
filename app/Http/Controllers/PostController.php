@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Enums\PostReactionEnum;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
+use App\Http\Resources\CommentResource;
 use App\Models\Comment;
 use App\Models\Post;
 use App\Models\PostAttachment;
@@ -176,6 +177,6 @@ class PostController extends Controller
             'comment' => $data['comment'],
             'user_id' => $userID,
         ]);
-        return response($comment, 201);
+        return response(new CommentResource($comment), 201);
     }
 }

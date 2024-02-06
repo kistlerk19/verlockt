@@ -49,11 +49,12 @@ function sendReaction() {
     })
 }
 
-function createComment(){
+function createComment() {
     axiosClient.post(route('post.comment.create', props.post), {
         comment: newCommentText.value
     }).then(({ data }) => {
-       console.log(data);
+        newCommentText.value = ''
+        console.log(data);
     })
 }
 </script>
@@ -172,22 +173,37 @@ function createComment(){
             <DisclosurePanel class="mt-4">
                 <div class="flex items-center gap-2 mb-4">
                     <a href="javascript:void(0)">
-                        <img
-                            :src="authUser.avatar_url"
-                            class="w-[40px] h-[40px] rounded-full border-2 transition-all hover:border-blue-400"
-                        />
-                        </a>
-                        <div class="flex flex-1">
-                        <TextAreaInput v-model="newCommentText" rows="1" class="w-full overflow-hidden rounded-r-none resize-none" placeholder="Add comment..."></TextAreaInput>
-                        <PrimaryButton @click="createComment" class="rounded-l-none w-[100px]">Submitted</PrimaryButton>
-                        </div>
+                        <img :src="authUser.avatar_url"
+                            class="w-[40px] h-[40px] rounded-full border-2 transition-all hover:border-blue-400" />
+                    </a>
+                    <div class="flex flex-1">
+                        <TextAreaInput v-model="newCommentText" rows="1"
+                            class="w-full overflow-hidden rounded-r-none resize-none" placeholder="Add comment...">
+                        </TextAreaInput>
+                        <PrimaryButton @click="createComment" class="rounded-l-none w-[100px]">Submit></PrimaryButton>
+                    </div>
                 </div>
                 <div>
-                    <div>
-                        Comment item 1
-                    </div>
-                    <div>
-                        Comment item 2
+                    <div v-for="comment of post.comments" :key="comment.id">
+                        <div class="flex items-center gap-2">
+                            <a href="javascript:void(0)">
+                                <img :src="comment.user.avatar_url"
+                                    class="w-[40px] h-[40px] rounded-full border-2 transition-all hover:border-blue-400" />
+                            </a>
+                            <div>
+                                <h4 class="font-bold">
+                                    <a href="javascript:void(0)" class="hover:underline">
+                                        {{ comment.user.username }}
+                                    </a>
+                                </h4>
+                                <small class="text-grey-100">
+                                    {{ comment.created_at }}
+                                </small>
+                            </div>
+                        </div>
+                        <div class="flex flex-1 ml-12">
+                            {{ comment.comment }}
+                        </div>
                     </div>
                 </div>
             </DisclosurePanel>
