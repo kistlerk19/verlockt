@@ -23,7 +23,9 @@ class PostResource extends JsonResource
             'group' => $this->group,
             'attachments' => PostAttachmentResource::collection($this->attachments),
             'impressions' => $this->reactions_count,
-            'user_has_impression' => $this->reactions->count() > 0
+            'user_has_impression' => $this->reactions->count() > 0,
+            'comments' => $this->comments,
+            'num_of_comments' => $this->comments_count,
         ];
     }
 }

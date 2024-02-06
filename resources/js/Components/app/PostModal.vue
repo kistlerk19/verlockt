@@ -111,9 +111,6 @@ function processErrors(errors) {
         if (key.includes('.')) {
             const [, index] = key.split('.')
             attachmentErrors.value[index] = errors[key]
-            console.log('====================================');
-            console.log(attachmentErrors);
-            console.log('====================================');
         }
     }
 }

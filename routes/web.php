@@ -39,6 +39,9 @@ Route::middleware('auth')->group(function () {
 
     Route::post('posts/{post}/reaction', [PostController::class, 'postReaction'])
         ->name('post.reaction');
+
+    Route::post('posts/{post}/comment', [PostController::class, 'createComment'])
+        ->name('post.comment.create');
 });
 
 require __DIR__ . '/auth.php';
