@@ -143,7 +143,7 @@ function previewAttachment(index)
           <img
             v-if="isImage(attachment)"
             :src="attachment.url"
-            class="object-cover rounded aspect-square"
+            class="object-cover rounded nowrap aspect-square"
           />
 
           <div v-else class="flex flex-col items-center justify-center">

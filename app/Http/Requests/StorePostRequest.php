@@ -9,7 +9,7 @@ use Illuminate\Validation\Rules\File;
 class StorePostRequest extends FormRequest
 {
     public static array $extensions = ['jpg', 'jpeg', 'png', 'webp', 'svg',
-        'gif', 'mp3', 'mp4', 'wav', 'doc', 'docx', 'ppt',
+        'gif', 'mp3', 'mp4', 'wav', 'doc', 'docx', 'ppt', 'epub',
         'pdf', 'csv', 'xls', 'xlsx', 'pptx', 'zip'];
     /**
      * Determine if the user is authorized to make this request.
@@ -28,10 +28,21 @@ class StorePostRequest extends FormRequest
     {
         return [
             'body' => ['nullable', 'string'],
-            'attachments' => 'array|max:10',
+            'attachments' => [
+                'array',
+                'max:50',
+                function ($value, $fail) {
+                    $totalSize = collect($value)->sum(fn(UploadedFile $file) => $file->getSize());
+                    dd($totalSize);
+                    if ($totalSize > 1 * 1024 * 1024 * 1024) {
+                        $fail("The total size of all files must not exceed 1GB.");
+                    }
+                }
+            ],
             'attachments.*' => [
                 'file',
-                File::types(self::$extensions)->max(500 * 1024 * 1024),
+                File::types(self::$extensions),
+                'max:1048576'
             ],
             'user_id' => ['numeric'],
         ];
@@ -48,13 +59,9 @@ class StorePostRequest extends FormRequest
     public function messages()
     {
         return [
-            'attachments.*' => "Invalid file"
+            'attachments.*.file' => 'Each attachment must be a file.',
+            'attachments.*.mimes' => 'Invalid file type.',
+            'attachments.*.max' => 'Attachment file must not exceed 1GB.',
         ];
     }
 }
-// function ($attribute, $value, $fail) {
-//     $totalSize = collect($value)->sum(fn(UploadedFile $file) => $file->getSize());
-//     if ($totalSize > 1000000) {
-//         $fail('The total size of all files must not exceed 1GB.');
-//     }
-// },

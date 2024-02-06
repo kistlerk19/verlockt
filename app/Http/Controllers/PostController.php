@@ -2,16 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use Exception;
-use App\Models\Post;
-use App\Models\User;
-use Illuminate\Http\Request;
-use App\Models\PostAttachment;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\StorePostRequest;
-use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\UpdatePostRequest;
+use App\Models\Post;
+use App\Models\PostAttachment;
+use App\Models\User;
+use Exception;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
@@ -57,7 +56,6 @@ class PostController extends Controller
 
         return back();
     }
-
 
     /**
      * Update the specified resource in storage.
@@ -119,7 +117,7 @@ class PostController extends Controller
 
         $id = Auth::id();
 
-        if($post->user_id !== $id) {
+        if ($post->user_id !== $id) {
             return response("You do not have permission to delete this post.", 403);
         }
 
