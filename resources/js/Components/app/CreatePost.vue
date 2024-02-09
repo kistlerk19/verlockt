@@ -37,7 +37,7 @@ function showCreatePostModal()
     <div
       @click="showCreatePostModal"
       rows="1"
-      class="w-full px-3 py-2 mb-3 text-gray-500 border-2 border-gray-300 rounded-md shadow-lg focus:border-indigo-500 focus:ring-indigo-500"
+      class="w-full px-3 py-2 mb-3 text-gray-500 border-2 border-gray-300 rounded-full shadow-2xl focus:border-indigo-500 focus:ring-indigo-500"
     >Click to create post</div>
 
     <!-- <div>

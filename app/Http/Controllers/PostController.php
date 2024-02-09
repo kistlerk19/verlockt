@@ -161,7 +161,7 @@ class PostController extends Controller
 
         return response([
             'impressions' => $reactions,
-            'user_has_impression' => $hasImpression
+            'user_has_impression' => $hasImpression,
         ]);
     }
 
@@ -169,12 +169,12 @@ class PostController extends Controller
     {
         $userID = Auth::id();
         $data = $request->validate([
-            'comment' => ['required']
+            'comment' => ['required'],
         ]);
 
         $comment = Comment::create([
             'post_id' => $post->id,
-            'comment' => $data['comment'],
+            'comment' => nl2br($data['comment']),
             'user_id' => $userID,
         ]);
         return response(new CommentResource($comment), 201);

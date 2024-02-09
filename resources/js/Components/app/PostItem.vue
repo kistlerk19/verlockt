@@ -7,8 +7,8 @@ import { ChatBubbleBottomCenterTextIcon, HandThumbUpIcon, TrashIcon, ArrowDownTr
 import { isImage } from '@/helpers.js'
 import { router, usePage } from "@inertiajs/vue3";
 import TextAreaInput from "@/Components/TextAreaInput.vue";
-import TextInput from "@/Components/TextInput.vue";
 import PostUserHeader from "@/Components/app/PostUserHeader.vue";
+import ReadMore from "@/Components/app/ReadMore.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import axiosClient from "@/axiosClient.js"
 import { ref } from "vue";
@@ -54,13 +54,14 @@ function createComment() {
         comment: newCommentText.value
     }).then(({ data }) => {
         newCommentText.value = ''
-        console.log(data);
+        props.post.comments.unshift(data)
+        props.post.num_of_comments++
     })
 }
 </script>
 
 <template>
-    <div class="p-4 mb-3 bg-gray-100 border rounded-md shadow hover:bg-gray-300">
+    <div class="p-4 mb-3 bg-gray-100 border rounded-md shadow hover:bg-gray-200">
         <div class="flex items-center justify-between mb-3">
             <PostUserHeader :post="post" />
             <div class="justify-self-end">
@@ -111,20 +112,8 @@ function createComment() {
         </div>
 
         <div class="mb-3">
-            <Disclosure v-slot="{ open }">
-                <div class="ck-content-output" v-if="!open" v-html="post.body.substring(0, 200)" />
-                <template v-if="post.body.length > 200">
-                    <DisclosurePanel>
-                        <div class="ck-content" v-html="post.body" />
-                    </DisclosurePanel>
-                    <DisclosureButton
-                        class="flex items-center justify-end w-full px-4 py-2 text-sm font-medium text-left text-blue-500 rounded-lg hover:underline focus:outline-none focus-visible:ring">
-                        {{ open ? "Read less" : "Read more..." }}
-                    </DisclosureButton>
-                </template>
-            </Disclosure>
+            <ReadMore :content="post.body" />
         </div>
-        <!-- <pre>{{ post.attachments }}</pre> -->
 
         <div class="grid gap-3 mb-3 " :class="post.attachments.length === 1 ? 'grid-cols-1' : 'grid-cols-2'">
             <template v-for="(attachment, index) of post.attachments.slice(0, 4)" :key="attachment.id">
@@ -156,13 +145,13 @@ function createComment() {
             <div class="flex gap-2 text-gray-700">
                 <button @click="sendReaction" :class="[
                     post.user_has_impression ? 'bg-indigo-300 hover:bg-indigo-100' : 'bg-gray-100 hover:bg-indigo-300'
-                ]" class="flex items-center justify-center flex-1 gap-1 px-4 py-2 rounded-full ">
+                ]" class="flex items-center justify-center flex-1 gap-1 px-4 py-2 rounded-full shadow-2xl ">
                     <HandThumbUpIcon class="w-6 h-6" />
                     <span class="mr-2">{{ post.impressions }}</span>
                     {{ post.has_impression ? 'Unlike' : 'Like' }}
                 </button>
                 <DisclosureButton
-                    class="flex items-center justify-center flex-1 gap-1 px-4 py-2 bg-gray-100 rounded-full hover:bg-indigo-300">
+                    class="flex items-center justify-center flex-1 gap-1 px-4 py-2 bg-gray-100 rounded-full shadow-2xl hover:bg-indigo-300">
                     <ChatBubbleBottomCenterTextIcon class="w-6 h-6" />
                     <span class="mr-2">{{ post.num_of_comments }}</span>
                     Comment
@@ -171,40 +160,38 @@ function createComment() {
             </div>
 
             <DisclosurePanel class="mt-4">
-                <div class="flex items-center gap-2 mb-4">
+                <div class="flex gap-2 mb-4">
                     <a href="javascript:void(0)">
                         <img :src="authUser.avatar_url"
                             class="w-[40px] h-[40px] rounded-full border-2 transition-all hover:border-blue-400" />
                     </a>
                     <div class="flex flex-1">
                         <TextAreaInput v-model="newCommentText" rows="1"
-                            class="w-full overflow-hidden rounded-r-none resize-none" placeholder="Add comment...">
+                            class="w-full max-h-[160px] rounded-r-none shadow-2xl resize-none" placeholder="Add comment...">
                         </TextAreaInput>
-                        <PrimaryButton @click="createComment" class="rounded-l-none w-[100px]">Submit></PrimaryButton>
+                        <PrimaryButton @click="createComment" class="rounded-l-none rounded-r-lg w-[100px]">Submit
+                        </PrimaryButton>
                     </div>
                 </div>
-                <div>
-                    <div v-for="comment of post.comments" :key="comment.id">
-                        <div class="flex items-center gap-2">
-                            <a href="javascript:void(0)">
-                                <img :src="comment.user.avatar_url"
-                                    class="w-[40px] h-[40px] rounded-full border-2 transition-all hover:border-blue-400" />
-                            </a>
-                            <div>
-                                <h4 class="font-bold">
-                                    <a href="javascript:void(0)" class="hover:underline">
-                                        {{ comment.user.username }}
-                                    </a>
-                                </h4>
-                                <small class="text-grey-100">
-                                    {{ comment.created_at }}
-                                </small>
-                            </div>
-                        </div>
-                        <div class="flex flex-1 ml-12">
-                            {{ comment.comment }}
+
+                <div class="p-2 mb-4 hover:bg-gray-100 rounded-xl" v-for="comment of post.comments" :key="comment.id">
+                    <div class="flex gap-2">
+                        <a href="javascript:void(0)">
+                            <img :src="comment.user.avatar_url"
+                                class="w-[40px] h-[40px] rounded-full border-2 transition-all hover:border-blue-400" />
+                        </a>
+                        <div>
+                            <h4 class="font-bold">
+                                <a href="javascript:void(0)" class="hover:underline">
+                                    {{ comment.user.username }}
+                                </a>
+                            </h4>
+                            <small class="text-xs text-grey-400">
+                                {{ comment.created_at }}
+                            </small>
                         </div>
                     </div>
+                    <ReadMore :content="comment.comment" content-class="flex flex-1 ml-12 text-sm" />
                 </div>
             </DisclosurePanel>
         </Disclosure>
