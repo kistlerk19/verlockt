@@ -11,8 +11,6 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import EditDeleteMenu from "@/Components/app/EditDeleteMenu.vue";
 import axiosClient from "@/axiosClient.js"
 import { ref } from "vue";
-import DangerButton from '@/Components/DangerButton.vue';
-import SecondaryButton from '@/Components/SecondaryButton.vue';
 
 const authUser = usePage().props.auth.user;
 
@@ -66,7 +64,18 @@ function editCommentModal(comment) {
         id: comment.id,
         comment: comment.comment.replace(/<br\s*\/?>/gi, '\n') // variations of <br />
     }
-    console.log(comment);
+}
+
+function updateComment() {
+    axiosClient.put(route('post.comment.update', editingComment.value.id), editingComment.value)
+        .then(({ data }) => {
+            props.post.comment = props.post.comments.map((c) => {
+                if (c.id === data.id) {
+                    return data
+                }
+                return c;
+            });
+        })
 }
 
 function deleteComment(comment) {
@@ -212,21 +221,21 @@ function deleteComment(comment) {
                                     </a>
                                 </h4>
                                 <small class="text-xs text-grey-400">
-                                    {{ comment.created_at }}
+                                    {{ comment.updated_at }}
                                 </small>
                             </div>
                         </div>
                         <EditDeleteMenu :user="comment.user" @edit="editCommentModal(comment)"
                             @delete="deleteComment(comment)" />
                     </div>
-                    <div v-if="editingComment" class="ml-12">
+                    <div v-if="editingComment && editingComment.id === comment.id" class="ml-12">
                         <TextAreaInput v-model="editingComment.comment" rows="1"
-                            class="w-full max-h-[160px] shadow-2xl resize-none" placeholder="Add comment...">
+                            class="w-full max-h-[160px] shadow-2xl resize-none">
                         </TextAreaInput>
                         <div class="flex justify-end gap-2">
                             <button @click="editingComment = null"
                                 class="relative flex items-center justify-center px-3 py-2 font-semibold text-red-500 border-none rounded-full hover:bg-gray-200">cancel</button>
-                            <PrimaryButton @click="createComment" class="rounded-full w-[100px]">update
+                            <PrimaryButton @click="updateComment" class="rounded-full w-[100px]">update
                             </PrimaryButton>
                         </div>
                     </div>
