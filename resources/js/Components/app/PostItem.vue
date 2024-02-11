@@ -1,7 +1,7 @@
 <script setup>
 import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue";
 import { DocumentIcon } from '@heroicons/vue/24/outline';
-import { ChatBubbleBottomCenterTextIcon, HandThumbUpIcon, TrashIcon, ArrowDownTrayIcon } from "@heroicons/vue/24/outline";
+import { ChatBubbleBottomCenterTextIcon, ChatBubbleLeftRightIcon, HandThumbUpIcon, TrashIcon, ArrowDownTrayIcon } from "@heroicons/vue/24/outline";
 import { isImage } from '@/helpers.js'
 import { router, usePage } from "@inertiajs/vue3";
 import TextAreaInput from "@/Components/TextAreaInput.vue";
@@ -41,8 +41,17 @@ function previewAttachment(index) {
     emit('attachmentClick', props.post, index);
 }
 
-function sendReaction() {
+function sendPostReaction() {
     axiosClient.post(route('post.reaction', props.post), {
+        reaction: 'like'
+    }).then(({ data }) => {
+        props.post.user_has_impression = data.user_has_impression
+        props.post.impressions = data.impressions
+    })
+}
+
+function sendCommentReaction() {
+    axiosClient.post(route('comment.reaction', props.post), {
         reaction: 'like'
     }).then(({ data }) => {
         props.post.user_has_impression = data.user_has_impression
@@ -66,19 +75,6 @@ function editCommentModal(comment) {
     }
 }
 
-// function updateComment() {
-//     axiosClient.put(route('post.comment.update', editingComment.value.id), {
-//         comment: editingComment.value.comment
-//     })
-//         .then(({ data }) => {
-//             props.post.comment = props.post.comments.map((c) => {
-//                 if (c.id === data.id) {
-//                     return data
-//                 }
-//                 return c;
-//             });
-//         })
-// }
 function updateComment() {
     axiosClient.put(route('post.comment.update', editingComment.value.id), editingComment.value)
         .then(({data}) => {
@@ -116,10 +112,10 @@ function deleteComment(comment) {
         </div>
 
         <div class="mb-3">
-            <ReadMore :content="post.body" />
+            <ReadMore :content="props.post.body" />
         </div>
 
-        <div class="grid gap-3 mb-3 " :class="post.attachments.length === 1 ? 'grid-cols-1' : 'grid-cols-2'">
+        <div class="grid gap-3 mb-3 " :class="props.post.attachments.length === 1 ? 'grid-cols-1' : 'grid-cols-2'">
             <template v-for="(attachment, index) of post.attachments.slice(0, 4)" :key="attachment.id">
                 <div @click="previewAttachment(index)"
                     class="relative flex flex-col items-center justify-center text-gray-500 bg-blue-200 rounded cursor-pointer group aspect-square">
@@ -148,7 +144,7 @@ function deleteComment(comment) {
 
         <Disclosure v-slot="{ open }">
             <div class="flex gap-2 text-gray-700">
-                <button @click="sendReaction" :class="[
+                <button @click="sendPostReaction" :class="[
                     post.user_has_impression ? 'bg-indigo-300 hover:bg-indigo-100' : 'bg-gray-100 hover:bg-indigo-300'
                 ]" class="flex items-center justify-center flex-1 gap-1 px-4 py-2 rounded-full shadow-2xl ">
                     <HandThumbUpIcon class="w-6 h-6" />
@@ -201,18 +197,30 @@ function deleteComment(comment) {
                         <EditDeleteMenu :user="comment.user" @edit="editCommentModal(comment)"
                             @delete="deleteComment(comment)" />
                     </div>
-                    <div v-if="editingComment && editingComment.id === comment.id" class="ml-12">
-                        <TextAreaInput v-model="editingComment.comment" rows="1"
-                            class="w-full max-h-[160px] shadow-2xl resize-none">
-                        </TextAreaInput>
-                        <div class="flex justify-end gap-2">
-                            <button @click="editingComment = null"
-                                class="relative flex items-center justify-center px-3 py-2 font-semibold text-red-500 border-none rounded-full hover:bg-gray-200">cancel</button>
-                            <PrimaryButton @click="updateComment" class="rounded-full w-[100px]">update
-                            </PrimaryButton>
+                    <div class="pl-12 pr-4">
+                        <div v-if="editingComment && editingComment.id === comment.id" class="">
+                            <TextAreaInput v-model="editingComment.comment" rows="1"
+                                class="w-full max-h-[160px] shadow-2xl resize-none">
+                            </TextAreaInput>
+                            <div class="flex justify-end gap-2">
+                                <button @click="editingComment = null"
+                                    class="relative flex items-center justify-center px-3 py-2 font-semibold text-red-500 border-none rounded-full hover:bg-gray-200">cancel</button>
+                                <PrimaryButton @click="updateComment" class="rounded-full w-[100px]">update
+                                </PrimaryButton>
+                            </div>
+                        </div>
+                        <ReadMore v-else :content="comment.comment" content-class="flex flex-1 text-sm" />
+                        <div class="flex gap-2 mt-1">
+                            <button class="flex items-center px-1 py-0.5 text-xs text-indigo-500 rounded-full hover:bg-indigo-200">
+                                <HandThumbUpIcon class="w-4 h-4 m-1" />
+                            </button>
+                            <button class="flex items-center p-2 text-xs text-indigo-500 rounded-full hover:bg-indigo-200">
+                                <svg class="mr-2" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+                                    <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 0 1 8 8v2M3 10l6 6m-6-6l6-6" />
+                                </svg> reply
+                            </button>
                         </div>
                     </div>
-                    <ReadMore v-else :content="comment.comment" content-class="flex flex-1 ml-12 text-sm" />
                 </div>
             </DisclosurePanel>
         </Disclosure>
