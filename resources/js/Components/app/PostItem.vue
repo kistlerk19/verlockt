@@ -1,7 +1,5 @@
 <script setup>
 import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue";
-import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue'
-import { PencilIcon, EllipsisVerticalIcon } from '@heroicons/vue/24/solid';
 import { DocumentIcon } from '@heroicons/vue/24/outline';
 import { ChatBubbleBottomCenterTextIcon, HandThumbUpIcon, TrashIcon, ArrowDownTrayIcon } from "@heroicons/vue/24/outline";
 import { isImage } from '@/helpers.js'
@@ -10,11 +8,15 @@ import TextAreaInput from "@/Components/TextAreaInput.vue";
 import PostUserHeader from "@/Components/app/PostUserHeader.vue";
 import ReadMore from "@/Components/app/ReadMore.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
+import EditDeleteMenu from "@/Components/app/EditDeleteMenu.vue";
 import axiosClient from "@/axiosClient.js"
 import { ref } from "vue";
+import DangerButton from '@/Components/DangerButton.vue';
+import SecondaryButton from '@/Components/SecondaryButton.vue';
 
 const authUser = usePage().props.auth.user;
-const emit = defineEmits(['editClick', 'attachmentClick'])
+
+const editingComment = ref(null)
 
 const newCommentText = ref('')
 
@@ -23,6 +25,7 @@ const props = defineProps({
 })
 
 
+const emit = defineEmits(['editClick', 'attachmentClick'])
 
 function openEditModal() {
     emit('editClick', props.post)
@@ -58,6 +61,24 @@ function createComment() {
         props.post.num_of_comments++
     })
 }
+function editCommentModal(comment) {
+    editingComment.value = {
+        id: comment.id,
+        comment: comment.comment.replace(/<br\s*\/?>/gi, '\n') // variations of <br />
+    }
+    console.log(comment);
+}
+
+function deleteComment(comment) {
+    if (!window.confirm("Are you sure you want to delete this comment?")) {
+        return false;
+    }
+    axiosClient.delete(route('post.comment.delete', comment.id))
+        .then(({ data }) => {
+            props.post.comments = props.post.comments.filter(c => c.id !== comment.id)
+            props.post.num_of_comments--;
+        })
+}
 </script>
 
 <template>
@@ -66,7 +87,7 @@ function createComment() {
             <PostUserHeader :post="post" />
             <div class="justify-self-end">
                 <div class="text-right top-16">
-                    <Menu as="div" class="relative z-10 inline-block text-left">
+                    <!-- <Menu as="div" class="relative z-10 inline-block text-left">
                         <div>
                             <MenuButton
                                 class="flex items-center justify-center px-2 py-2 text-sm transition rounded-full hover:bg-black/10">
@@ -106,7 +127,8 @@ function createComment() {
                                 </div>
                             </MenuItems>
                         </transition>
-                    </Menu>
+                    </Menu> -->
+                    <EditDeleteMenu :user="props.post.user" @edit="openEditModal" @delete="deletePost" />
                 </div>
             </div>
         </div>
@@ -137,6 +159,7 @@ function createComment() {
                         <DocumentIcon class="w-12 h-12" />
                         <small>{{ attachment.name }}</small>
                     </div>
+
                 </div>
             </template>
         </div>
@@ -167,7 +190,8 @@ function createComment() {
                     </a>
                     <div class="flex flex-1">
                         <TextAreaInput v-model="newCommentText" rows="1"
-                            class="w-full max-h-[160px] rounded-r-none shadow-2xl resize-none" placeholder="Add comment...">
+                            class="w-full max-h-[160px] rounded-r-none shadow-2xl resize-none"
+                            placeholder="Add new comment...">
                         </TextAreaInput>
                         <PrimaryButton @click="createComment" class="rounded-l-none rounded-r-lg w-[100px]">Submit
                         </PrimaryButton>
@@ -175,23 +199,38 @@ function createComment() {
                 </div>
 
                 <div class="p-2 mb-4 hover:bg-gray-100 rounded-xl" v-for="comment of post.comments" :key="comment.id">
-                    <div class="flex gap-2">
-                        <a href="javascript:void(0)">
-                            <img :src="comment.user.avatar_url"
-                                class="w-[40px] h-[40px] rounded-full border-2 transition-all hover:border-blue-400" />
-                        </a>
-                        <div>
-                            <h4 class="font-bold">
-                                <a href="javascript:void(0)" class="hover:underline">
-                                    {{ comment.user.username }}
-                                </a>
-                            </h4>
-                            <small class="text-xs text-grey-400">
-                                {{ comment.created_at }}
-                            </small>
+                    <div class="flex justify-between gap-2">
+                        <div class="flex gap-2">
+                            <a href="javascript:void(0)">
+                                <img :src="comment.user.avatar_url"
+                                    class="w-[40px] h-[40px] rounded-full border-2 transition-all hover:border-blue-400" />
+                            </a>
+                            <div>
+                                <h4 class="font-bold">
+                                    <a href="javascript:void(0)" class="hover:underline">
+                                        {{ comment.user.username }}
+                                    </a>
+                                </h4>
+                                <small class="text-xs text-grey-400">
+                                    {{ comment.created_at }}
+                                </small>
+                            </div>
+                        </div>
+                        <EditDeleteMenu :user="comment.user" @edit="editCommentModal(comment)"
+                            @delete="deleteComment(comment)" />
+                    </div>
+                    <div v-if="editingComment" class="ml-12">
+                        <TextAreaInput v-model="editingComment.comment" rows="1"
+                            class="w-full max-h-[160px] shadow-2xl resize-none" placeholder="Add comment...">
+                        </TextAreaInput>
+                        <div class="flex justify-end gap-2">
+                            <button @click="editingComment = null"
+                                class="relative flex items-center justify-center px-3 py-2 font-semibold text-red-500 border-none rounded-full hover:bg-gray-200">cancel</button>
+                            <PrimaryButton @click="createComment" class="rounded-full w-[100px]">update
+                            </PrimaryButton>
                         </div>
                     </div>
-                    <ReadMore :content="comment.comment" content-class="flex flex-1 ml-12 text-sm" />
+                    <ReadMore v-else :content="comment.comment" content-class="flex flex-1 ml-12 text-sm" />
                 </div>
             </DisclosurePanel>
         </Disclosure>

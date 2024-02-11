@@ -179,4 +179,15 @@ class PostController extends Controller
         ]);
         return response(new CommentResource($comment), 201);
     }
+
+    public function deleteComment(Comment $comment)
+    {
+        if ($comment->user_id !== Auth::id()) {
+            return response("Yuou don't have permission to delete this comment!", 403);
+        }
+
+        $comment->delete();
+
+        return response("", 204);
+    }
 }
