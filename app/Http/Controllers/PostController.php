@@ -10,7 +10,7 @@ use App\Http\Resources\CommentResource;
 use App\Models\Comment;
 use App\Models\Post;
 use App\Models\PostAttachment;
-use App\Models\PostReaction;
+use App\Models\Impression;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
@@ -144,21 +144,25 @@ class PostController extends Controller
             'reaction' => [Rule::enum(PostReactionEnum::class)],
         ]);
 
-        $reaction = PostReaction::where('user_id', $userID)->where('post_id', $post->id)->first();
+        $reaction = Impression::where('user_id', $userID)
+            ->where('object_id', $post->id)
+            ->where('object_type', Post::class)
+            ->first();
 
         if ($reaction) {
             $reaction->delete();
             $hasImpression = false;
         } else {
-            PostReaction::create([
-                'post_id' => $post->id,
+            Impression::create([
+                'object_id' => $post->id,
+                'object_type' => Post::class,
                 'user_id' => $userID,
                 'type' => $data['reaction'],
             ]);
             $hasImpression = true;
         }
 
-        $reactions = PostReaction::where('post_id', $post->id)->count();
+        $reactions = Impression::where('object_id', $post->id)->where('object_type', Post::class)->count();
 
         return response([
             'impressions' => $reactions,
