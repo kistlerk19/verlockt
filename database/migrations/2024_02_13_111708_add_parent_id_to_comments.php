@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('comments', function (Blueprint $table) {
-            $table->bigInteger('parent_id')->unsigned()->nullable();
+            $table->bigInteger('parent_id')->unsigned()->nullable(); //parent_id comment or subcomment
         });
     }
 
