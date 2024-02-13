@@ -2,7 +2,7 @@
 
 namespace App\Http\Enums;
 
-enum PostReactionEnum: string
+enum ImpressionEnum: string
 {
     case LIKE = 'like';
 }

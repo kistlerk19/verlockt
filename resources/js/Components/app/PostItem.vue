@@ -50,12 +50,12 @@ function sendPostReaction() {
     })
 }
 
-function sendCommentReaction() {
-    axiosClient.post(route('comment.reaction', props.post), {
+function sendCommentReaction(comment) {
+    axiosClient.post(route('comment.impression', comment.id), {
         reaction: 'like'
     }).then(({ data }) => {
-        props.post.user_has_impression = data.user_has_impression
-        props.post.impressions = data.impressions
+        comment.user_has_impression = data.user_has_impression
+        comment.impressions = data.impressions
     })
 }
 
@@ -76,8 +76,8 @@ function editCommentModal(comment) {
 }
 
 function updateComment() {
-    axiosClient.put(route('post.comment.update', editingComment.value.id), editingComment.value)
-        .then(({data}) => {
+    axiosClient.put(route('comment.update', editingComment.value.id), editingComment.value)
+        .then(({ data }) => {
             editingComment.value = null
             props.post.comments = props.post.comments.map((c) => {
                 if (c.id === data.id) {
@@ -92,7 +92,7 @@ function deleteComment(comment) {
     if (!window.confirm("Are you sure you want to delete this comment?")) {
         return false;
     }
-    axiosClient.delete(route('post.comment.delete', comment.id))
+    axiosClient.delete(route('comment.delete', comment.id))
         .then(({ data }) => {
             props.post.comments = props.post.comments.filter(c => c.id !== comment.id)
             props.post.num_of_comments--;
@@ -145,17 +145,17 @@ function deleteComment(comment) {
         <Disclosure v-slot="{ open }">
             <div class="flex gap-2 text-gray-700">
                 <button @click="sendPostReaction" :class="[
-                    post.user_has_impression ? 'bg-indigo-300 hover:bg-indigo-100' : 'bg-gray-100 hover:bg-indigo-300'
+                    post.user_has_impression ? 'bg-indigo-100 hover:bg-indigo-50' : 'bg-gray-50 hover:bg-indigo-100'
                 ]" class="flex items-center justify-center flex-1 gap-1 px-4 py-2 rounded-full shadow-2xl ">
                     <HandThumbUpIcon class="w-6 h-6" />
                     <span class="mr-2">{{ post.impressions }}</span>
-                    {{ post.has_impression ? 'Unlike' : 'Like' }}
+                    {{ post.user_has_impression ? 'unlike' : 'like' }}
                 </button>
                 <DisclosureButton
-                    class="flex items-center justify-center flex-1 gap-1 px-4 py-2 bg-gray-100 rounded-full shadow-2xl hover:bg-indigo-300">
+                    class="flex items-center justify-center flex-1 gap-1 px-4 py-2 bg-gray-100 rounded-full shadow-2xl hover:bg-indigo-100">
                     <ChatBubbleBottomCenterTextIcon class="w-6 h-6" />
                     <span class="mr-2">{{ post.num_of_comments }}</span>
-                    Comment
+                    comments
                 </DisclosureButton>
 
             </div>
@@ -211,12 +211,18 @@ function deleteComment(comment) {
                         </div>
                         <ReadMore v-else :content="comment.comment" content-class="flex flex-1 text-sm" />
                         <div class="flex gap-2 mt-1">
-                            <button class="flex items-center px-1 py-0.5 text-xs text-indigo-500 rounded-full hover:bg-indigo-200">
+                            <button @click="sendCommentReaction(comment)" :class="[
+                                comment.user_has_impression ? 'bg-indigo-100 hover:bg-indigo-50' : 'bg-gray-100 hover:bg-indigo-300'
+                            ]" class="flex items-center px-1 shadow-xl py-0.5 text-xs text-indigo-500 rounded-full">
                                 <HandThumbUpIcon class="w-4 h-4 m-1" />
+                                <span class="mr-2">{{ comment.impressions }}</span>
+                                {{ comment.user_has_impression ? 'unlike' : 'like' }}
                             </button>
-                            <button class="flex items-center p-2 text-xs text-indigo-500 rounded-full hover:bg-indigo-200">
-                                <svg class="mr-2" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
-                                    <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 0 1 8 8v2M3 10l6 6m-6-6l6-6" />
+                            <button class="flex items-center p-2 text-xs text-indigo-500 rounded-full shadow-xl hover:bg-indigo-100">
+                                <svg class="mr-2" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"
+                                    viewBox="0 0 24 24">
+                                    <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                        stroke-width="2" d="M3 10h10a8 8 0 0 1 8 8v2M3 10l6 6m-6-6l6-6" />
                                 </svg> reply
                             </button>
                         </div>

@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Enums\PostReactionEnum;
+use App\Http\Enums\ImpressionEnum;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdateCommentRequest;
 use App\Http\Requests\UpdatePostRequest;
 use App\Http\Resources\CommentResource;
 use App\Models\Comment;
+use App\Models\Impression;
 use App\Models\Post;
 use App\Models\PostAttachment;
-use App\Models\Impression;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
@@ -141,7 +141,7 @@ class PostController extends Controller
     {
         $userID = Auth::id();
         $data = $request->validate([
-            'reaction' => [Rule::enum(PostReactionEnum::class)],
+            'reaction' => [Rule::enum(ImpressionEnum::class)],
         ]);
 
         $reaction = Impression::where('user_id', $userID)
@@ -201,9 +201,44 @@ class PostController extends Controller
         $data = $request->validated();
 
         $comment->update([
-            'comment' => nl2br($data['comment'])
+            'comment' => nl2br($data['comment']),
         ]);
 
         return new CommentResource($comment);
+    }
+
+    public function commentImpression(Request $request, Comment $comment)
+    {
+        $userID = Auth::id();
+        $data = $request->validate([
+            'reaction' => [Rule::enum(ImpressionEnum::class)],
+        ]);
+
+        $reaction = Impression::where('user_id', $userID)
+            ->where('object_id', $comment->id)
+            ->where('object_type', Comment::class)
+            ->first();
+
+        if ($reaction) {
+            $reaction->delete();
+            $hasImpression = false;
+        } else {
+            Impression::create([
+                'object_id' => $comment->id,
+                'object_type' => Comment::class,
+                'user_id' => $userID,
+                'type' => $data['reaction'],
+            ]);
+            $hasImpression = true;
+        }
+
+        $reactions = Impression::where('object_id', $comment->id)
+            ->where('object_type', Comment::class)
+            ->count();
+
+        return response([
+            'impressions' => $reactions,
+            'user_has_impression' => $hasImpression,
+        ]);
     }
 }
