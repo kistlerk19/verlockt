@@ -1,16 +1,15 @@
 <script setup>
-import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue";
-import { DocumentIcon } from '@heroicons/vue/24/outline';
-import { ChatBubbleBottomCenterTextIcon, ChatBubbleLeftRightIcon, HandThumbUpIcon, TrashIcon, ArrowDownTrayIcon } from "@heroicons/vue/24/outline";
-import { isImage } from '@/helpers.js'
-import { router, usePage } from "@inertiajs/vue3";
+import {Disclosure, DisclosureButton, DisclosurePanel} from "@headlessui/vue";
+import {ChatBubbleBottomCenterTextIcon, HandThumbUpIcon} from '@heroicons/vue/24/outline';
+import {router, usePage} from "@inertiajs/vue3";
 import TextAreaInput from "@/Components/TextAreaInput.vue";
 import PostUserHeader from "@/Components/app/PostUserHeader.vue";
 import ReadMore from "@/Components/app/ReadMore.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import EditDeleteMenu from "@/Components/app/EditDeleteMenu.vue";
 import axiosClient from "@/axiosClient.js"
-import { ref } from "vue";
+import {ref} from "vue";
+import PostAttachment from "@/Components/app/PostAttachment.vue";
 
 const authUser = usePage().props.auth.user;
 
@@ -116,33 +115,11 @@ function deleteComment(comment) {
         </div>
 
         <div class="grid gap-3 mb-3 " :class="props.post.attachments.length === 1 ? 'grid-cols-1' : 'grid-cols-2'">
-            <template v-for="(attachment, index) of post.attachments.slice(0, 4)" :key="attachment.id">
-                <div @click="previewAttachment(index)"
-                    class="relative flex flex-col items-center justify-center text-gray-500 bg-blue-200 rounded cursor-pointer group aspect-square">
-                    <div v-if="index === 3 && post.attachments.length > 4"
-                        class="absolute top-0 bottom-0 left-0 right-0 z-10 flex items-center justify-center text-xl text-white bg-black/60">
-                        + {{ post.attachments.length - 4 }}
-                    </div>
-                    <!-- download -->
-                    <a @click.stop :href="route('post.download', attachment)"
-                        class="absolute flex items-center justify-center w-8 h-8 text-white rounded opacity-0 cursor-pointer bg-black/20 group-hover:opacity-100 hover:bg-black/80 top-2 right-2">
-                        <ArrowDownTrayIcon class="p-2" />
-                    </a>
-
-                    <img v-if="isImage(attachment)" :src="attachment.url"
-                        class="object-cover rounded nowrap aspect-square" />
-
-                    <div v-else class="flex flex-col items-center justify-center">
-                        <!-- file -->
-                        <DocumentIcon class="w-12 h-12" />
-                        <small>{{ attachment.name }}</small>
-                    </div>
-
-                </div>
-            </template>
+            <PostAttachment :attachments="post.attachments" @attachmentClick="previewAttachment" />
         </div>
 
         <Disclosure v-slot="{ open }">
+            <!-- post impressions thus like & comment buttons -->
             <div class="flex gap-2 text-gray-700">
                 <button @click="sendPostReaction" :class="[
                     post.user_has_impression ? 'bg-indigo-100 hover:bg-indigo-50' : 'bg-gray-50 hover:bg-indigo-100'
@@ -226,6 +203,7 @@ function deleteComment(comment) {
                                 </svg> reply
                             </button>
                         </div>
+
                     </div>
                 </div>
             </DisclosurePanel>
@@ -234,4 +212,3 @@ function deleteComment(comment) {
     </div>
 </template>
 
-<style scoped></style>

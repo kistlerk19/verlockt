@@ -45,7 +45,7 @@ function onInputChange ($event)
 
 <template>
   <textarea
-    class="text-gray-700 border-gray-300 rounded-lg shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+    class="text-gray-700 border-gray-300 rounded-lg shadow-sm "
     :value="modelValue"
     @input="onInputChange"
     ref="input"
