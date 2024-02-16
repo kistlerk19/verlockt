@@ -82,7 +82,7 @@ function sendPostReaction() {
 
             </div>
 
-            <DisclosurePanel class="mt-4">
+            <DisclosurePanel class="mt-4 overflow-auto h-[400px]">
                 <PostComments :post="props.post" :data="{ comments: post.comments }"/>
             </DisclosurePanel>
         </Disclosure>
