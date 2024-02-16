@@ -42,11 +42,11 @@ Route::middleware('auth')->group(function () {
 
     Route::post('posts/{post}/comment', [PostController::class, 'createComment'])
         ->name('post.comment.create');
-    Route::delete('comments/{comment}', [PostController::class, 'deleteComment'])
+    Route::delete('comment/{comment}', [PostController::class, 'deleteComment'])
         ->name('comment.delete');
-    Route::put('comments/{comment}', [PostController::class, 'updateComment'])
+    Route::put('comment/{comment}', [PostController::class, 'updateComment'])
         ->name('comment.update');
-    Route::post('comments/{comment}/impression', [PostController::class, 'commentImpression'])
+    Route::post('comment/{comment}/impression', [PostController::class, 'commentImpression'])
         ->name('comment.impression');
 });
 
