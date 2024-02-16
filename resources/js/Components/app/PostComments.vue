@@ -23,6 +23,8 @@ const props = defineProps({
     },
 })
 
+const emit = defineEmits(['commentCreate', 'commentDelete']);
+
 function createComment() {
     axiosClient.post(route('post.comment.create', props.post), {
         comment: newCommentText.value,
@@ -33,10 +35,9 @@ function createComment() {
         // props.post.num_of_comments++;
         if (props.parentComment) {
             props.parentComment.num_of_comments++;
-            props.post.num_of_comments++;
-        } else {
-            props.post.num_of_comments++;
         }
+        props.post.num_of_comments++;
+        emit('commentCreate', data)
     })
 }
 
@@ -46,6 +47,7 @@ function editCommentModal(comment) {
         comment: comment.comment.replace(/<br\s*\/?>/gi, '\n') // variations of <br />
     }
 }
+
 function updateComment() {
     axiosClient.put(route('comment.update', editingComment.value.id), editingComment.value)
         .then(({ data }) => {
@@ -71,10 +73,9 @@ function deleteComment(comment) {
             // props.post.comments = props.post.comments.filter(c => c.id !== comment.id)
             if (props.parentComment) {
                 props.parentComment.num_of_comments--;
-                props.post.num_of_comments--;
-            } else {
-                props.post.num_of_comments--;
             }
+            props.post.num_of_comments--;
+            emit('commentDelete', comment)
         })
 }
 function sendCommentReaction(comment) {
@@ -84,6 +85,19 @@ function sendCommentReaction(comment) {
         comment.user_has_impression = data.user_has_impression
         comment.impressions = data.impressions
     })
+}
+
+function onCreateComment(comment) {
+    if(props.parentComment){
+        props.parentComment.num_of_comments++;
+    }
+    emit('commentCreate', comment)
+}
+function onDeleteComment(comment) {
+    if(props.parentComment){
+        props.parentComment.num_of_comments--;
+    }
+    emit('commentDelete', comment)
 }
 </script>
 <template>
@@ -150,13 +164,15 @@ function sendCommentReaction(comment) {
                                 viewBox="0 0 24 24">
                                 <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
                                     stroke-width="2" d="M3 10h10a8 8 0 0 1 8 8v2M3 10l6 6m-6-6l6-6" />
-                            </svg><span :class="[comment.num_of_comments > 0 ? 'mr-2' : '']">{{ comment.num_of_comments > 0 ? comment.num_of_comments : '' }}</span>
+                            </svg><span :class="[comment.num_of_comments > 0 ? 'mr-2' : '']">{{ comment.num_of_comments > 0
+                                ? comment.num_of_comments : '' }}</span>
                             replies
                         </DisclosureButton>
                     </div>
                     <DisclosurePanel class="mt-3">
                         <!-- <pre>{{ comment.comments }}</pre> -->
-                        <PostComments :post="post" :data="{ comments: comment.comments }" :parent-comment="comment" />
+                        <PostComments :post="post" :data="{ comments: comment.comments }" :parent-comment="comment"
+                            @comment-create="onCreateComment" @comment-delete="onDeleteComment" />
                     </DisclosurePanel>
                 </Disclosure>
 
