@@ -15,20 +15,20 @@ class HomeController extends Controller
         $userID = Auth::id();
         $posts = Post::query() // SELECT  * FROM posts;
             ->withCount('reactions') // SELECT COUNT(*) FROM reactions
-            // ->withCount('comments')
+        // ->withCount('comments')
             ->with([
                 'comments' => function ($query) use ($userID) {
                     $query
-                        // ->whereNull('parent_id')
+                    // ->whereNull('parent_id')
                         ->withCount('reactions') // SELECT * FROM comments WHERE post_id IN (1, 2, 3...)
-                                                // SELECT COUNT(*) FROM reactions
+                        // SELECT COUNT(*) FROM reactions
                         // ->withCount('comments')
                         // ->with([
                         //     'reactions' => function ($query) use ($userID) {
                         //         $query->where('user_id', $userID);
                         //     }
                         // ])
-                        ;
+                    ;
                 },
                 'reactions' => function ($query) use ($userID) {
                     $query->where('user_id', $userID); // SELECT * FROM reactions WHERE user_id = ?
@@ -36,8 +36,13 @@ class HomeController extends Controller
             ->latest()
             ->paginate(20);
 
+        $posts = PostResource::collection($posts);
+        if ($request->wantsJson()) {
+            return $posts;
+        }
+
         return Inertia::render("Home", [
-            'posts' => PostResource::collection($posts),
+            'posts' => $posts,
         ]);
     }
 }
