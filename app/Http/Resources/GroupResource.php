@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -18,10 +19,12 @@ class GroupResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'slug' => $this->slug,
-            // 'cover_path' => $this->cover_path,
-            // 'thumbnail_path' => $this->thumbnail_path,
+            'thumbnail_url' => 'https://picsum.photos/100',
+            // 'thumbnail_url' => '',
             'auto_approval' => $this->auto_approval,
-            'description' => $this->description,
+            'status' => $this->status,
+            'role' => $this->role,
+            'description' => Str::words($this->description, 10),
             'user_id' => $this->user_id,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

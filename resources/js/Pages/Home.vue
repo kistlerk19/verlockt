@@ -6,7 +6,8 @@ import CreatePost from "@/Components/app/CreatePost.vue";
 import PostList from "@/Components/app/PostList.vue";
 
 defineProps({
-    posts: Object
+    posts: Object,
+    groups: Array,
 })
 </script>
 
@@ -15,7 +16,7 @@ defineProps({
   <AuthenticatedLayout>
     <div class="grid h-full gap-3 p-4 lg:grid-cols-12">
       <div class="h-full overflow-hidden lg:col-span-3 lg:order-1">
-        <GroupList />
+        <GroupList :groups="groups"/>
       </div>
       <div class="h-full overflow-hidden lg:col-span-3 lg:order-3">
         <FollowingList />
