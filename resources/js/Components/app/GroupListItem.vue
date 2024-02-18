@@ -8,7 +8,7 @@
 </script>
 
 <template>
-        <TextInput :model-value="searchKey" placeholder="Search" class="w-full mt-4"/>
+        <TextInput :model-value="searchKey" placeholder="Search" class="w-full mt-4 rounded-full"/>
         <div class="flex-1 h-[300px] mt-3 overflow-auto">
             <div v-if="false" class="p-3 text-center text-gray-400">
                 You are not part of any group yet.

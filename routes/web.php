@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\GroupController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProfileController;
@@ -30,16 +31,16 @@ Route::middleware('auth')->group(function () {
     Route::post('/profile/profile-image', [ProfileController::class, 'updateProfileImage'])
         ->name('profile.image.update');
 
+    // Posts
     Route::post('post', [PostController::class, 'store'])->name('post.create');
     Route::put('post/{post}', [PostController::class, 'update'])->name('post.update');
     Route::delete('post/{post}', [PostController::class, 'destroy'])->name('post.delete');
-
     Route::get('posts/download/{attachment}', [PostController::class, 'download'])
         ->name('post.download');
-
     Route::post('posts/{post}/reaction', [PostController::class, 'postReaction'])
         ->name('post.reaction');
 
+    // Comments
     Route::post('posts/{post}/comment', [PostController::class, 'createComment'])
         ->name('post.comment.create');
     Route::delete('comment/{comment}', [PostController::class, 'deleteComment'])
@@ -48,6 +49,10 @@ Route::middleware('auth')->group(function () {
         ->name('comment.update');
     Route::post('comment/{comment}/impression', [PostController::class, 'commentImpression'])
         ->name('comment.impression');
+
+    // Groups
+    Route::post('group', [GroupController::class, 'store'])
+        ->name('group.create');
 });
 
 require __DIR__ . '/auth.php';
