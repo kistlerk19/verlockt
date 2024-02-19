@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ProfileUpdateRequest;
+use App\Http\Resources\UserResource;
 use App\Models\User;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
-use Illuminate\Http\Request;
-use App\Http\Resources\UserResource;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Redirect;
-use App\Http\Requests\ProfileUpdateRequest;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 class ProfileController extends Controller
 {
@@ -80,7 +80,7 @@ class ProfileController extends Controller
         $user = $request->user();
         $data = $request->validate([
             'cover' => ['nullable', 'image'],
-            'avatar' => ['nullable', 'image']
+            'avatar' => ['nullable', 'image'],
         ]);
 
         $avatar = $data['avatar'] ?? null;
@@ -88,24 +88,21 @@ class ProfileController extends Controller
 
         $success = '';
 
-
-        if($avatar)
-        {
+        if ($avatar) {
             if ($user->avatar_path) {
                 Storage::disk('public')->delete($user->avatar_path);
             }
-            $path = $avatar->store('images/'.$user->id . '/avatar', 'public');
+            $path = $avatar->store('images/' . $user->id . '/avatar', 'public');
             $user->update(['avatar_path' => $path]);
 
             $success = 'Avatar Was Updated.';
         }
 
-        if($cover)
-        {
+        if ($cover) {
             if ($user->cover_path) {
                 Storage::disk('public')->delete($user->cover_path);
             }
-            $path = $cover->store('images/'.$user->id . '/cover', 'public');
+            $path = $cover->store('images/' . $user->id . '/cover', 'public');
             $user->update(['cover_path' => $path]);
 
             $success = 'Cover Image was Updated.';

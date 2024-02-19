@@ -40,7 +40,7 @@ const form = useForm({
                 <TextInput
                     id="name"
                     type="text"
-                    class="block w-full mt-1"
+                    class="block w-full mt-1 rounded-lg"
                     v-model="form.name"
                     required
                     autocomplete="name"
@@ -54,7 +54,7 @@ const form = useForm({
                 <TextInput
                     id="username"
                     type="text"
-                    class="block w-full mt-1"
+                    class="block w-full mt-1 rounded-lg"
                     v-model="form.username"
                     required
                     autocomplete="username"
@@ -69,7 +69,7 @@ const form = useForm({
                 <TextInput
                     id="email"
                     type="email"
-                    class="block w-full mt-1"
+                    class="block w-full mt-1 rounded-lg"
                     v-model="form.email"
                     required
                     autocomplete="username"

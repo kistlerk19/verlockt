@@ -4,21 +4,28 @@ namespace App\Http\Controllers;
 
 use App\Http\Enums\GroupUserRole;
 use App\Http\Enums\GroupUserStatusEnum;
-use App\Http\Resources\GroupResource;
-use App\Models\Group;
-use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\StoreGroupRequest;
 use App\Http\Requests\UpdateGroupRequest;
+use App\Http\Resources\GroupResource;
+use App\Models\Group;
 use App\Models\GroupUser;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Inertia\Inertia;
 
 class GroupController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function groupInfo(Group $group)
     {
-        //
+        $group->load('currentUserGroup');
+        return Inertia::render('Group/View', [
+            'success' => session('success'),
+            'group' => new GroupResource($group),
+        ]);
     }
 
     /**
@@ -45,12 +52,42 @@ class GroupController extends Controller
         return response(new GroupResource($group), 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Group $group)
+    public function updateGroupImage(Request $request, Group $group)
     {
-        //
+        if (!$group->isAdmin(Auth::id())) {
+            return response("You are not authorized to perform this action!!", 403);
+        }
+        $data = $request->validate([
+            'cover' => ['nullable', 'image'],
+            'thumbnail' => ['nullable', 'image'],
+        ]);
+
+        $thumbnail = $data['thumbnail'] ?? null;
+        $cover = $data['cover'] ?? null;
+
+        $success = '';
+
+        if ($thumbnail) {
+            if ($group->thumbnail_path) {
+                Storage::disk('public')->delete($group->thumbnail_path);
+            }
+            $path = $thumbnail->store('images/groups/' . $group->id . '/thumbnail', 'public');
+            $group->update(['thumbnail_path' => $path]);
+
+            $success = 'thumbnail Was Updated.';
+        }
+
+        if ($cover) {
+            if ($group->cover_path) {
+                Storage::disk('public')->delete($group->cover_path);
+            }
+            $path = $cover->store('images/groups/' . $group->id . '/cover', 'public');
+            $group->update(['cover_path' => $path]);
+
+            $success = 'Cover Image was Updated.';
+        }
+
+        return back()->with('success', $success);
     }
 
     /**

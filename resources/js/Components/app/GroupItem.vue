@@ -1,4 +1,5 @@
 <script setup>
+import { Link } from '@inertiajs/vue3';
     defineProps({
         group: Object,
     })
@@ -6,7 +7,7 @@
 
 <template>
     <div class="mb-3 rounded-md cursor-pointer hover:bg-gray-200">
-        <div class="flex items-start gap-1 px-2 py-2">
+        <Link :href="route('group.info', group.slug)" class="flex items-start gap-1 px-2 py-2">
             <img :src="group.thumbnail_url" alt="" class="w-[32px] rounded-full gap-3"/>
             <div class="flex-1">
                 <div class="flex justify-between">
@@ -17,7 +18,7 @@
                     {{  group.description  }}
                 </div>
             </div>
-        </div>
+        </Link>
 
     </div>
 </template>

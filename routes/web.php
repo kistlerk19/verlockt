@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 Route::get('/u/{user:username}', [ProfileController::class, 'index'])->name('profile');
+Route::get('/g/{group:slug}', [GroupController::class, 'groupInfo'])->name('group.info');
 
 // Route::get('/dashboard', function () {
 //     return Inertia::render('Dashboard');
@@ -31,28 +32,30 @@ Route::middleware('auth')->group(function () {
     Route::post('/profile/profile-image', [ProfileController::class, 'updateProfileImage'])
         ->name('profile.image.update');
 
-    // Posts
-    Route::post('post', [PostController::class, 'store'])->name('post.create');
-    Route::put('post/{post}', [PostController::class, 'update'])->name('post.update');
-    Route::delete('post/{post}', [PostController::class, 'destroy'])->name('post.delete');
-    Route::get('posts/download/{attachment}', [PostController::class, 'download'])
+        // Posts
+        Route::post('post', [PostController::class, 'store'])->name('post.create');
+        Route::put('post/{post}', [PostController::class, 'update'])->name('post.update');
+        Route::delete('post/{post}', [PostController::class, 'destroy'])->name('post.delete');
+        Route::get('posts/download/{attachment}', [PostController::class, 'download'])
         ->name('post.download');
-    Route::post('posts/{post}/reaction', [PostController::class, 'postReaction'])
+        Route::post('posts/{post}/reaction', [PostController::class, 'postReaction'])
         ->name('post.reaction');
 
-    // Comments
-    Route::post('posts/{post}/comment', [PostController::class, 'createComment'])
+        // Comments
+        Route::post('posts/{post}/comment', [PostController::class, 'createComment'])
         ->name('post.comment.create');
-    Route::delete('comment/{comment}', [PostController::class, 'deleteComment'])
+        Route::delete('comment/{comment}', [PostController::class, 'deleteComment'])
         ->name('comment.delete');
-    Route::put('comment/{comment}', [PostController::class, 'updateComment'])
+        Route::put('comment/{comment}', [PostController::class, 'updateComment'])
         ->name('comment.update');
-    Route::post('comment/{comment}/impression', [PostController::class, 'commentImpression'])
+        Route::post('comment/{comment}/impression', [PostController::class, 'commentImpression'])
         ->name('comment.impression');
 
-    // Groups
-    Route::post('group', [GroupController::class, 'store'])
+        // Groups
+        Route::post('group', [GroupController::class, 'store'])
         ->name('group.create');
+        Route::post('group/profile-image/{group:slug}', [GroupController::class, 'updateGroupImage'])
+            ->name('group.image.update');
 });
 
 require __DIR__ . '/auth.php';

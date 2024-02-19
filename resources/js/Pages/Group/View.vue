@@ -1,38 +1,33 @@
 <script setup>
-import { ref, computed, reactive } from "vue";
-import { Head, usePage, router, useForm } from "@inertiajs/vue3";
+import { ref, computed } from "vue";
+import { usePage, useForm } from "@inertiajs/vue3";
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from "@headlessui/vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import TabItem from "./Partials/TabItem.vue";
-import Edit from "./Edit.vue";
-import PrimaryButton from "@/Components/PrimaryButton.vue";
+import TabItem from "@/Pages/Profile/Partials/TabItem.vue";
 import { XMarkIcon, ArrowUpTrayIcon, CameraIcon } from "@heroicons/vue/24/solid";
+import PrimaryButton from '@/Components/PrimaryButton.vue';
 
-const props = defineProps({
-    errors: Object,
-    mustVerifyEmail: {
-        type: Boolean,
-    },
-    status: {
-        type: String,
-    },
-    success: {
-        type: String,
-    },
-    user: {
-        type: Object,
-    },
-});
 const imageForm = useForm({
     cover: null,
-    avatar: null,
+    thumbnail: null,
 });
 
 const coverImageSrc = ref("");
-const avatarImageSrc = ref("");
+const thumbnailImageSrc = ref("");
 const authUser = usePage().props.auth.user;
-const isMyProfile = computed(() => authUser && authUser.id === props.user.id);
 const showNotification = ref(true);
+
+const isUserAdmin = computed(() => props.group.role === 'admin');
+
+const props = defineProps({
+    errors: Object,
+    success: {
+        type: String,
+    },
+    group: {
+        type: Object,
+    },
+});
 
 function onCoverChange(event) {
     imageForm.cover = event.target.files[0];
@@ -46,22 +41,22 @@ function onCoverChange(event) {
         reader.readAsDataURL(imageForm.cover);
     }
 }
-function onAvatarChange(event) {
-    imageForm.avatar = event.target.files[0];
+function onThumbnailChange(event) {
+    imageForm.thumbnail = event.target.files[0];
 
-    if (imageForm.avatar) {
+    if (imageForm.thumbnail) {
         const reader = new FileReader();
         reader.onload = () => {
-            avatarImageSrc.value = reader.result;
+            thumbnailImageSrc.value = reader.result;
         };
 
-        reader.readAsDataURL(imageForm.avatar);
+        reader.readAsDataURL(imageForm.thumbnail);
     }
 }
 
 function submitCoverImage() {
-    imageForm.post(route("profile.image.update"), {
-        onSuccess: (user) => {
+    imageForm.post(route("group.image.update", props.group.slug), {
+        onSuccess: () => {
             showNotification.value = true
             resetCoverImage();
             setTimeout(() => {
@@ -70,11 +65,11 @@ function submitCoverImage() {
         },
     });
 }
-function submitAvatarImage() {
-    imageForm.post(route("profile.image.update"), {
-        onSuccess: (user) => {
+function submitThumbnailImage() {
+    imageForm.post(route("group.image.update", props.group.slug), {
+        onSuccess: () => {
             showNotification.value = true
-            resetAvatarImage();
+            resetThumbnailImage();
             setTimeout(() => {
                 showNotification.value = false;
             }, 5000);
@@ -85,9 +80,9 @@ function resetCoverImage() {
     imageForm.cover = null;
     coverImageSrc.value = null;
 }
-function resetAvatarImage() {
-    imageForm.avatar = null;
-    avatarImageSrc.value = null;
+function resetThumbnailImage() {
+    imageForm.thumbnail = null;
+    thumbnailImageSrc.value = null;
 }
 </script>
 
@@ -106,8 +101,9 @@ function resetAvatarImage() {
 
             <div class="relative group">
 
-                <img class="object-cover rounded-md h-[200px] w-full" :src="coverImageSrc || user.cover_url" alt="" />
-                <div class="absolute top-2 right-2">
+                <img class="object-cover rounded-md h-[200px] w-full"
+                    :src="coverImageSrc || group.cover_url || '/images/default_cover.jpg'" alt="" />
+                <div v-if="isUserAdmin" class="absolute top-2 right-2">
                     <button v-if="!coverImageSrc"
                         class="flex items-center px-2 py-1 text-xs text-gray-700 rounded opacity-0 group-hover:opacity-100 bg-gray-50 hover:bg-gray-300">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -140,23 +136,23 @@ function resetAvatarImage() {
 
                     <div
                         class="relative flex overflow-hidden items-center justify-center group/avatar w-[128px] h-[128px] -mt-[64px] ml-[54px]">
-                        <img class="object-cover w-full h-full rounded-full" :src="avatarImageSrc || user.avatar_url"
-                            alt="" />
+                        <img class="object-cover w-full h-full rounded-full"
+                            :src="thumbnailImageSrc || group.thumbnail_url || '/images/default_pfp.png'" alt="" />
                         <div class="absolute top-0 bottom-0 left-0 right-0 ">
-                            <button v-if="!avatarImageSrc"
+                            <button v-if="isUserAdmin && !thumbnailImageSrc"
                                 class="absolute top-0 bottom-0 left-0 right-0 flex items-center justify-center text-xs text-gray-300 rounded-full opacity-0 bg-black/80 group-hover/avatar:opacity-100">
                                 <CameraIcon class="w-8 h-8" />
                                 <!-- Update Avatar -->
-                                <input @change="onAvatarChange" type="file"
+                                <input @change="onThumbnailChange" type="file"
                                     class="absolute top-0 bottom-0 left-0 right-0 opacity-0 cursor-pointer" />
                             </button>
-                            <div v-else class="absolute flex gap-2 right-1 top-1">
-                                <button @click="resetAvatarImage"
+                            <div v-else-if="isUserAdmin" class="absolute flex gap-2 right-1 top-1">
+                                <button @click="resetThumbnailImage"
                                     class="flex items-center p-2 text-xs text-gray-700 bg-red-700 rounded-full opacity-0 group-hover:opacity-100 hover:bg-red-900/80">
                                     <XMarkIcon class="w-5 h-5" />
                                     <!-- Cancel Avatar -->
                                 </button>
-                                <button @click="submitAvatarImage"
+                                <button @click="submitThumbnailImage"
                                     class="flex items-center p-2 text-xs text-gray-100 rounded-full opacity-0 bg-emerald-700 group-hover:opacity-100 hover:bg-emerald-700/80">
                                     <ArrowUpTrayIcon class="w-5 h-5" />
                                     <!-- Avatar Update -->
@@ -166,8 +162,12 @@ function resetAvatarImage() {
                     </div>
                     <div class="flex items-center justify-between flex-1 p-2">
                         <h2 class="text-lg font-bold">
-                            {{ user.name }}
+                            {{ group.name }}
                         </h2>
+                        <PrimaryButton v-if="isUserAdmin">invite user</PrimaryButton>
+                        <PrimaryButton v-if="authUser && !group.role && group.auto_approval">join</PrimaryButton>
+                        <PrimaryButton v-if="authUser && !group.role && !group.auto_approval">request to join
+                        </PrimaryButton>
                     </div>
                 </div>
             </div>
@@ -186,9 +186,6 @@ function resetAvatarImage() {
                         <Tab v-slot="{ selected }">
                             <TabItem text="Media" as="template" :selected="selected" />
                         </Tab>
-                        <Tab v-if="isMyProfile" v-slot="{ selected }">
-                            <TabItem text="My Profile" as="template" :selected="selected" />
-                        </Tab>
                     </TabList>
 
                     <TabPanels class="mt-2">
@@ -196,9 +193,6 @@ function resetAvatarImage() {
                         <TabPanel class="p-3 bg-white rounded shadow"> Following </TabPanel>
                         <TabPanel class="p-3 bg-white rounded shadow"> Followers </TabPanel>
                         <TabPanel class="p-3 bg-white rounded shadow"> Media </TabPanel>
-                        <TabPanel v-if="isMyProfile" class="p-4">
-                            <Edit :must-verify-email="mustVerifyEmail" :status="status" />
-                        </TabPanel>
                     </TabPanels>
                 </TabGroup>
             </div>
