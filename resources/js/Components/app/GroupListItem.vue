@@ -8,9 +8,13 @@ import GroupModal from '@/Components/app/GroupModal.vue';
 const searchKey = ref('')
 const newGroupModal = ref(false)
 
-defineProps({
+const props = defineProps({
     groups: Array
 })
+
+function onGroupCreate(group){
+    props.groups.unshift(group)
+}
 </script>
 
 <template>
@@ -28,6 +32,6 @@ defineProps({
             <GroupItem v-for="group of groups" :group="group" :key="group.id" />
         </div>
 
-        <GroupModal v-model="newGroupModal" />
+        <GroupModal v-model="newGroupModal" @create="onGroupCreate(group)"/>
     </div>
 </template>

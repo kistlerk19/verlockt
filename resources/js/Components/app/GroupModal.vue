@@ -33,7 +33,7 @@ const show = computed({
     set: (value) => emit("update:modelValue", value),
 });
 
-const emit = defineEmits(["update:modelValue", "hide"]);
+const emit = defineEmits(["update:modelValue", "hide", "create"]);
 
 const closeModal = () => {
     show.value = false;
@@ -48,9 +48,9 @@ const resetModal = () => {
 
 function save() {
     axiosClient.post(route('group.create'), form)
-        .then(res => {
-            console.log(res);
+        .then(({ data }) => {
             closeModal()
+            emit('create', data)
         })
     // form.post(route('group.create'), {
     //     onSuccess(res) {
@@ -95,17 +95,17 @@ function save() {
                                     <div class="mb-3">
                                         <label>Group Name</label>
                                         <TextInput type="text" class="block w-full mt-1 rounded-lg" v-model="form.name"
-                                        required autofocus />
+                                            required autofocus />
                                     </div>
                                     <div class="mb-3">
-                                        <label >
-                                            <Checkbox name="" v-modeel:checked="form.auto_approval" />
+                                        <label>
+                                            <Checkbox name="" v-model:checked="form.auto_approval" />
                                             Enable Auto Approval
                                         </label>
                                     </div>
                                     <div class="mb-3">
                                         <label>About Group</label>
-                                        <TextAreaInput v-model="form.description" class="w-full shadow-2xl"/>
+                                        <TextAreaInput v-model="form.description" class="w-full shadow-2xl" />
                                     </div>
                                 </div>
 

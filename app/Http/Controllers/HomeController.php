@@ -37,7 +37,9 @@ class HomeController extends Controller
             ->select(['groups.*', 'gu.status', 'gu.role'])
             ->join('group_users AS gu', 'gu.group_id', 'groups.id')
             ->where('gu.user_id', Auth::id())
-            ->where('status', GroupUserStatusEnum::APPROVED->value)
+            // ->where('status', GroupUserStatusEnum::APPROVED->value)
+            ->orderBy('gu.role')
+            ->orderBy('name', 'desc')
             ->get();
 
         return Inertia::render("Home", [
