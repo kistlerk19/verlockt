@@ -164,9 +164,10 @@ function resetThumbnailImage() {
                         <h2 class="text-lg font-bold">
                             {{ group.name }}
                         </h2>
+                        <!-- <pre>{{ group }}</pre> -->
                         <PrimaryButton v-if="isUserAdmin">invite user</PrimaryButton>
-                        <PrimaryButton v-if="authUser && !group.role && group.auto_approval">join</PrimaryButton>
-                        <PrimaryButton v-if="authUser && !group.role && !group.auto_approval">request to join
+                        <PrimaryButton v-if="group.role && !group.auto_approval">join group</PrimaryButton>
+                        <PrimaryButton v-if="!group.role && !group.auto_approval">request to join
                         </PrimaryButton>
                     </div>
                 </div>
