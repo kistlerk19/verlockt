@@ -31,7 +31,7 @@ const submit = () => {
                 <TextInput
                     id="name"
                     type="text"
-                    class="block w-full mt-1"
+                    class="block w-full mt-1 rounded-xl"
                     v-model="form.name"
                     required
                     autofocus
@@ -47,7 +47,7 @@ const submit = () => {
                 <TextInput
                     id="email"
                     type="email"
-                    class="block w-full mt-1"
+                    class="block w-full mt-1 rounded-xl"
                     v-model="form.email"
                     required
                     autocomplete="username"
@@ -62,7 +62,7 @@ const submit = () => {
                 <TextInput
                     id="password"
                     type="password"
-                    class="block w-full mt-1"
+                    class="block w-full mt-1 rounded-xl"
                     v-model="form.password"
                     required
                     autocomplete="new-password"
@@ -77,7 +77,7 @@ const submit = () => {
                 <TextInput
                     id="password_confirmation"
                     type="password"
-                    class="block w-full mt-1"
+                    class="block w-full mt-1 rounded-xl"
                     v-model="form.password_confirmation"
                     required
                     autocomplete="new-password"
@@ -89,7 +89,7 @@ const submit = () => {
             <div class="flex items-center justify-end mt-4">
                 <Link
                     :href="route('login')"
-                    class="text-sm text-gray-600 underline rounded-md dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800"
+                    class="text-sm text-gray-600 underline rounded-md dark:text-gray-400 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 "
                 >
                     Already registered?
                 </Link>

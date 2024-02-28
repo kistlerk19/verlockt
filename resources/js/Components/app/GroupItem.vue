@@ -8,7 +8,7 @@ import { Link } from '@inertiajs/vue3';
 <template>
     <div class="mb-3 rounded-md cursor-pointer hover:bg-gray-200">
         <Link :href="route('group.info', group.slug)" class="flex items-start gap-1 px-2 py-2">
-            <img :src="group.thumbnail_url" alt="" class="w-[32px] rounded-full gap-3"/>
+            <img :src="group.thumbnail_url" alt="" class="w-[32px] h-[32px] object-cover rounded-full gap-3"/>
             <div class="flex-1">
                 <div class="flex justify-between">
                     <h3 class="text-lg font-bold">{{ group.name }}</h3>

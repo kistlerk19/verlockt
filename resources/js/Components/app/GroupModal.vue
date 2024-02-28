@@ -99,7 +99,7 @@ function save() {
                                     </div>
                                     <div class="mb-3">
                                         <label>
-                                            <Checkbox name="" v-model:checked="form.auto_approval" />
+                                            <Checkbox name="remember" v-model:checked="form.auto_approval" />
                                             Enable Auto Approval
                                         </label>
                                     </div>
