@@ -86,6 +86,13 @@ function resetThumbnailImage() {
     imageForm.thumbnail = null;
     thumbnailImageSrc.value = null;
 }
+function joinGroup() {
+    const form = useForm({
+
+    })
+
+    form.post(route('group.join', props.group.slug))
+}
 </script>
 
 <template>
@@ -167,9 +174,17 @@ function resetThumbnailImage() {
                             {{ group.name }}
                         </h2>
                         <!-- <pre>{{ group }}</pre> -->
-                        <PrimaryButton @click="showInviteUserModal = true" v-if="isUserAdmin">invite user</PrimaryButton>
-                        <PrimaryButton v-if="group.role && !group.auto_approval">join group</PrimaryButton>
-                        <PrimaryButton v-if="!group.role && !group.auto_approval">request to join
+                        <PrimaryButton v-if="!authUser" :href="route('login')">
+                            Login to join this group.
+                        </PrimaryButton>
+                        <PrimaryButton @click="showInviteUserModal = true" v-if="isUserAdmin">
+                            invite user
+                        </PrimaryButton>
+                        <PrimaryButton v-if="authUser && !group.role && group.auto_approval" @click="joinGroup">
+                            join group
+                        </PrimaryButton>
+                        <PrimaryButton v-if="authUser && !group.role && !group.auto_approval">
+                            request to join
                         </PrimaryButton>
                     </div>
                 </div>

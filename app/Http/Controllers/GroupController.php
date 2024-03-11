@@ -12,9 +12,11 @@ use App\Models\Group;
 use App\Models\GroupUser;
 use App\Notifications\GroupInvitation;
 use App\Notifications\InvitationApproved;
+use App\Notifications\RequestToJoinGroup;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -120,7 +122,6 @@ class GroupController extends Controller
                 'role' => GroupUserRole::USER->value,
                 'token' => $token,
                 'token_expires_date' => Carbon::now()->addHours($hours),
-                // 'token_expire_date' => Carbon::now()->addHours(24),
                 'user_id' => $user->id,
                 'group_id' => $group->id,
                 'created_by' => Auth::id(),
@@ -159,6 +160,33 @@ class GroupController extends Controller
 
         return redirect(route('group.info', $groupUser->group))
             ->with('success', 'You accepted to join the group "' . $groupUser->group->name . '"');
+    }
+
+    public function join(Group $group)
+    {
+        $user = request()->user();
+        $status = GroupUserStatusEnum::APPROVED->value;
+        $successMessage = 'You joined the group "' . $group->name . '"';
+
+        if (!$group->auto_approval) {
+            $status = GroupUserStatusEnum::PENDING->value;
+
+            // Send Mail
+            $group->adminUsers();
+            dd($group->adminUsers);
+            Notification::send($group->adminUsers, new RequestToJoinGroup($group, $user));
+            $successMessage = 'Your request to join the "' . $group->name . '" group has been accepted.';
+        }
+
+        GroupUser::create([
+            'status' => $status,
+            'role' => GroupUserRole::USER->value,
+            'user_id' => $user->id,
+            'group_id' => $group->id,
+            'created_by' => $user->id,
+        ]);
+
+        return back()->with('success', $successMessage);
     }
 
     /**
