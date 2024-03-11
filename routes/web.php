@@ -20,6 +20,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [HomeController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 Route::get('/u/{user:username}', [ProfileController::class, 'index'])->name('profile');
 Route::get('/g/{group:slug}', [GroupController::class, 'groupInfo'])->name('group.info');
+Route::get('group/accept-invite/{token}', [GroupController::class, 'acceptInvitation'])
+            ->name('group.accept.invite');
 
 // Route::get('/dashboard', function () {
 //     return Inertia::render('Dashboard');
@@ -56,6 +58,9 @@ Route::middleware('auth')->group(function () {
         ->name('group.create');
         Route::post('group/profile-image/{group:slug}', [GroupController::class, 'updateGroupImage'])
             ->name('group.image.update');
+        Route::post('group/invite/{group:slug}', [GroupController::class, 'inviteUsers'])
+            ->name('group.invite.user');
+
 });
 
 require __DIR__ . '/auth.php';

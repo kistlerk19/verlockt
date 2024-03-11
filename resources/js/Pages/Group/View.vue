@@ -6,6 +6,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import TabItem from "@/Pages/Profile/Partials/TabItem.vue";
 import { XMarkIcon, ArrowUpTrayIcon, CameraIcon } from "@heroicons/vue/24/solid";
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import InviteUserModal from '@/Pages/Group/InviteUserModal.vue';
 
 const imageForm = useForm({
     cover: null,
@@ -16,6 +17,7 @@ const coverImageSrc = ref("");
 const thumbnailImageSrc = ref("");
 const authUser = usePage().props.auth.user;
 const showNotification = ref(true);
+const showInviteUserModal = ref(false);
 
 const isUserAdmin = computed(() => props.group.role === 'admin');
 
@@ -165,7 +167,7 @@ function resetThumbnailImage() {
                             {{ group.name }}
                         </h2>
                         <!-- <pre>{{ group }}</pre> -->
-                        <PrimaryButton v-if="isUserAdmin">invite user</PrimaryButton>
+                        <PrimaryButton @click="showInviteUserModal = true" v-if="isUserAdmin">invite user</PrimaryButton>
                         <PrimaryButton v-if="group.role && !group.auto_approval">join group</PrimaryButton>
                         <PrimaryButton v-if="!group.role && !group.auto_approval">request to join
                         </PrimaryButton>
@@ -198,6 +200,7 @@ function resetThumbnailImage() {
                 </TabGroup>
             </div>
         </div>
+        <InviteUserModal v-model="showInviteUserModal" />
     </AuthenticatedLayout>
 </template>
 

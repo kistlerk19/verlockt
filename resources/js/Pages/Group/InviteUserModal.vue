@@ -8,7 +8,7 @@ import {
     DialogTitle,
 } from "@headlessui/vue";
 import { XMarkIcon } from "@heroicons/vue/24/solid";
-import { useForm } from "@inertiajs/vue3";
+import { useForm, usePage } from "@inertiajs/vue3";
 import Checkbox from "@/Components/Checkbox.vue";
 import TextAreaInput from "@/Components/TextAreaInput.vue";
 import TextInput from "@/Components/TextInput.vue";
@@ -18,14 +18,14 @@ const props = defineProps({
     modelValue: Boolean,
 });
 
+const page = usePage()
+
 
 const formErrors = ref({});
 const extWarning = ref(false);
 
 const form = useForm({
-    name: "",
-    auto_approval: true,
-    description: "",
+    email: "",
 });
 
 const show = computed({
@@ -35,34 +35,28 @@ const show = computed({
 
 const emit = defineEmits(["update:modelValue", "hide", "create"]);
 
+const closeModal = () => {
+    show.value = false;
+    emit('hide')
+    resetModal();
+};
 
 const resetModal = () => {
     form.reset();
     formErrors.value = {}
 };
 
-function save() {
-    axiosClient.post(route('group.create'), form)
-        .then(({ data }) => {
+function inviteUser() {
+    form.post(route('group.invite.user', page.props.group.slug), {
+        onSuccess(res) {
+            console.log(res);
             closeModal()
-            emit('create', data)
-        })
-    // form.post(route('group.create'), {
-    //     onSuccess(res) {
-    //         console.log(res);
-    //         show.value = false
-    //         closeModal()
-    //     },
-    //     onError(err){
-    //         console.log(err);
-    //     }
-    // })
+        },
+        onError(res) {
+            console.log(res);
+        }
+    })
 }
-const closeModal = () => {
-    show.value = false;
-    emit('hide')
-    resetModal();
-};
 </script>
 
 <template>
@@ -83,7 +77,7 @@ const closeModal = () => {
                                 class="w-full max-w-[800px] p-6 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl">
                                 <DialogTitle as="h3"
                                     class="flex items-center justify-between w-full px-4 py-3 text-lg font-medium leading-6 text-gray-900 bg-gray-200 rounded-lg">
-                                    create new group
+                                    invite users
                                     <button @click="closeModal"
                                         class="flex items-center justify-center px-2 py-2 text-sm transition rounded-full hover:bg-black/10">
                                         <XMarkIcon class="w-4 h-4" />
@@ -93,31 +87,22 @@ const closeModal = () => {
                                 <!-- <pre>{{ form }}</pre> -->
                                 <div class="px-4 py-3 mt-2">
                                     <div class="mb-3">
-                                        <label>Group Name</label>
-                                        <TextInput type="text" class="block w-full mt-1 rounded-lg" v-model="form.name"
+                                        <label>Email or Username</label>
+                                        <TextInput type="text" :class="page.props.errors.email ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''" class="block w-full mt-1 rounded-lg" v-model="form.email"
                                             required autofocus />
-                                    </div>
-                                    <div class="mb-3">
-                                        <label>
-                                            <Checkbox name="remember" v-model:checked="form.auto_approval" />
-                                            Enable Auto Approval
-                                        </label>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label>About Group</label>
-                                        <TextAreaInput v-model="form.description" class="w-full shadow-2xl" />
+                                        <div class="mt-1 text-sm text-red-500 ">{{ page.props.errors.email }}</div>
                                     </div>
                                 </div>
 
                                 <div class="flex justify-end gap-2 px-4 py-3 mt-4">
                                     <button type="button"
-                                        class="relative flex items-center justify-center px-3 py-2 text-sm font-semibold text-gray-900 border-none rounded-full shadow-2xl bg-indigo-50 hover:bg-gray-200">
+                                        class="relative flex items-center justify-center px-3 py-2 text-sm font-semibold text-gray-900 border-none rounded-lg shadow-2xl bg-indigo-50 hover:bg-gray-200">
                                         cancel
                                     </button>
                                     <button type="button"
-                                        class="px-3 py-2 text-sm font-semibold text-gray-700 bg-indigo-200 rounded-full shadow-2xl hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                        @click="save">
-                                        save
+                                        class="px-3 py-2 text-sm font-semibold text-gray-700 bg-indigo-200 rounded-lg shadow-2xl hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                        @click="inviteUser">
+                                        invite
                                     </button>
                                 </div>
                             </DialogPanel>
