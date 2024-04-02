@@ -13,7 +13,7 @@ const authUser = usePage().props.auth.user;
 
 <template>
   <div
-    class="flex flex-col h-full overflow-hidden bg-gray-100 "
+    class="flex flex-col h-full overflow-hidden bg-gray-200 "
   >
     <nav
       class="bg-white border-b border-gray-100 "

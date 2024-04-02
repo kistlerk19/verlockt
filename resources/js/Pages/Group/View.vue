@@ -7,6 +7,8 @@ import TabItem from "@/Pages/Profile/Partials/TabItem.vue";
 import { XMarkIcon, ArrowUpTrayIcon, CameraIcon } from "@heroicons/vue/24/solid";
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import InviteUserModal from '@/Pages/Group/InviteUserModal.vue';
+import UserListItem from '@/Components/app/UserListItem.vue';
+import TextInput from '@/Components/TextInput.vue';
 
 const imageForm = useForm({
     cover: null,
@@ -18,8 +20,10 @@ const thumbnailImageSrc = ref("");
 const authUser = usePage().props.auth.user;
 const showNotification = ref(true);
 const showInviteUserModal = ref(false);
+const searchKey = ref('');
 
 const isUserAdmin = computed(() => props.group.role === 'admin');
+const userJoinedTheGroup = computed(() => !!props.group.role && props.group.status === 'approved');
 
 const props = defineProps({
     errors: Object,
@@ -29,6 +33,8 @@ const props = defineProps({
     group: {
         type: Object,
     },
+    users: Array,
+    requests: Array,
 });
 
 function onCoverChange(event) {
@@ -93,6 +99,23 @@ function joinGroup() {
 
     form.post(route('group.join', props.group.slug))
 }
+
+function approveUserRequest(user) {
+    const form = useForm({
+        user_id: user.id,
+        action: 'approve'
+    })
+
+    form.post(route('group.approveRequest', props.group.slug))
+}
+function rejectUserRequest(user) {
+    const form = useForm({
+        user_id: user.id,
+        action: 'reject'
+    })
+
+    form.post(route('group.approveRequest', props.group.slug))
+}
 </script>
 
 <template>
@@ -108,7 +131,7 @@ function joinGroup() {
                 {{ errors.cover }}
             </div>
 
-            <div class="relative group">
+            <div class="relative p-4 group">
 
                 <img class="object-cover rounded-md h-[200px] w-full"
                     :src="coverImageSrc || group.cover_url || '/images/default_cover.jpg'" alt="" />
@@ -195,11 +218,11 @@ function joinGroup() {
                         <Tab v-slot="{ selected }">
                             <TabItem text="Posts" as="template" :selected="selected" />
                         </Tab>
-                        <Tab v-slot="{ selected }">
-                            <TabItem text="Following" as="template" :selected="selected" />
+                        <Tab v-if="userJoinedTheGroup" v-slot="{ selected }">
+                            <TabItem text="Users" as="template" :selected="selected" />
                         </Tab>
-                        <Tab v-slot="{ selected }">
-                            <TabItem text="Followers" as="template" :selected="selected" />
+                        <Tab v-if="isUserAdmin"  v-slot="{ selected }">
+                            <TabItem text="Pending Requests" as="template" :selected="selected" />
                         </Tab>
                         <Tab v-slot="{ selected }">
                             <TabItem text="Media" as="template" :selected="selected" />
@@ -208,8 +231,31 @@ function joinGroup() {
 
                     <TabPanels class="mt-2">
                         <TabPanel class="p-3 bg-white rounded shadow"> Posts </TabPanel>
-                        <TabPanel class="p-3 bg-white rounded shadow"> Following </TabPanel>
-                        <TabPanel class="p-3 bg-white rounded shadow"> Followers </TabPanel>
+                        <TabPanel v-if="userJoinedTheGroup" class="p-3 rounded">
+                            <div class="mb-3">
+                                <TextInput :model-value="searchKey" placeholder="Search" class="w-full rounded-full shadow-xl"/>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <UserListItem v-for="user of users"
+                                :user="user"
+                                :key="user.id"
+                                class="bg-gray-100 rounded-lg shadow-xl " />
+                            </div>
+                        </TabPanel>
+                        <TabPanel v-if="isUserAdmin" class="p-3 rounded">
+                            <div v-if="requests.length" class="grid grid-cols-2 gap-3">
+                                <UserListItem v-for="user of requests"
+                                :user="user"
+                                :key="user.id"
+                                :approve-button="true"
+                                @approve="approveUserRequest"
+                                @reject="rejectUserRequest"
+                                class="bg-gray-100 rounded-lg shadow-xl " />
+                            </div>
+                            <div class="py-8 text-center">
+                                There are no pending requests.
+                            </div>
+                        </TabPanel>
                         <TabPanel class="p-3 bg-white rounded shadow"> Media </TabPanel>
                     </TabPanels>
                 </TabGroup>
