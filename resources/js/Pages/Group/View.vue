@@ -64,6 +64,7 @@ function onThumbnailChange(event) {
 
 function submitCoverImage() {
     imageForm.post(route("group.image.update", props.group.slug), {
+        preserveScroll: true,
         onSuccess: () => {
             showNotification.value = true
             resetCoverImage();
@@ -75,6 +76,7 @@ function submitCoverImage() {
 }
 function submitThumbnailImage() {
     imageForm.post(route("group.image.update", props.group.slug), {
+        preserveScroll: true,
         onSuccess: () => {
             showNotification.value = true
             resetThumbnailImage();
@@ -97,7 +99,9 @@ function joinGroup() {
 
     })
 
-    form.post(route('group.join', props.group.slug))
+    form.post(route('group.join', props.group.slug), {
+        preserveScroll: true
+    })
 }
 
 function approveUserRequest(user) {
@@ -106,7 +110,9 @@ function approveUserRequest(user) {
         action: 'approve'
     })
 
-    form.post(route('group.approveRequest', props.group.slug))
+    form.post(route('group.approveRequest', props.group.slug), {
+        preserveScroll: true
+    })
 }
 function rejectUserRequest(user) {
     const form = useForm({
@@ -114,7 +120,20 @@ function rejectUserRequest(user) {
         action: 'reject'
     })
 
-    form.post(route('group.approveRequest', props.group.slug))
+    form.post(route('group.approveRequest', props.group.slug), {
+        preserveScroll: true
+    })
+}
+function onRoleChange(user, role) {
+    // console.log(user, role);
+    const form = useForm({
+        user_id: user.id,
+        role,
+    })
+
+    form.post(route('group.role.change', props.group.slug), {
+        preserveScroll: true
+    })
 }
 </script>
 
@@ -239,7 +258,10 @@ function rejectUserRequest(user) {
                                 <UserListItem v-for="user of users"
                                 :user="user"
                                 :key="user.id"
-                                class="bg-gray-100 rounded-lg shadow-xl " />
+                                :show-role-dropdown="isUserAdmin"
+                                :disable-role-dropdown="group.user_id === user.id"
+                                class="bg-gray-100 rounded-lg shadow-xl "
+                                @role-change="onRoleChange"/>
                             </div>
                         </TabPanel>
                         <TabPanel v-if="isUserAdmin" class="p-3 rounded">

@@ -2,26 +2,30 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
+use App\Models\User;
+use Inertia\Inertia;
+use App\Models\Group;
+use App\Models\GroupUser;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use App\Http\Enums\GroupUserRole;
+use App\Http\Resources\UserResource;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Resources\GroupResource;
+use App\Notifications\GroupInvitation;
+use App\Notifications\RequestApproved;
 use App\Http\Enums\GroupUserStatusEnum;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\InviteUserRequest;
 use App\Http\Requests\StoreGroupRequest;
 use App\Http\Requests\UpdateGroupRequest;
-use App\Http\Resources\GroupResource;
-use App\Http\Resources\UserResource;
-use App\Models\Group;
-use App\Models\GroupUser;
-use App\Notifications\GroupInvitation;
+use App\Http\Resources\GroupUserResource;
 use App\Notifications\InvitationApproved;
-use App\Notifications\RequestApproved;
 use App\Notifications\RequestToJoinGroup;
-use Carbon\Carbon;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Notifications\RoleChanged;
 use Illuminate\Support\Facades\Notification;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
-use Inertia\Inertia;
 
 class GroupController extends Controller
 {
@@ -32,7 +36,12 @@ class GroupController extends Controller
     {
         $group->load('currentUserGroup');
 
-        $users = $group->approvedUsers()->orderBy('name')->get();
+        $users = User::query()
+            ->select(['users.*', 'gu.role', 'gu.status', 'gu.group_id'])
+            ->join('group_users AS gu', 'gu.user_id', 'users.id')
+            ->orderBy('users.name')
+            ->where('group_id', $group->id)
+            ->get();
         $requests = $group->pendingUsers;
 
         return Inertia::render(
@@ -40,7 +49,7 @@ class GroupController extends Controller
             [
                 'success' => session('success'),
                 'group' => new GroupResource($group),
-                'users' => UserResource::collection($users),
+                'users' => GroupUserResource::collection($users),
                 'requests' => UserResource::collection($requests),
             ]
         );
@@ -231,6 +240,37 @@ class GroupController extends Controller
         }
 
         return back();
+    }
+
+    public function roleChange(Request $request, Group $group)
+    {
+        if (!$group->isAdmin(Auth::id())) {
+            return response("You are not authorized to perform this action!!", 403);
+        }
+
+        $data = $request->validate([
+            'user_id' => ['required'],
+            'role' => ['required', Rule::enum(GroupUserRole::class)]
+        ]);
+
+        $user_id = $data['user_id'];
+
+        if ($group->isOwner($user_id)) {
+            return response("You cannot change the role of the group owner.", 403);
+        }
+
+        $groupUser = GroupUser::where('user_id', $user_id)
+            ->where('group_id', $group->id)
+            ->first();
+
+        if ($groupUser) {
+            $groupUser->role = $data['role'];
+            $groupUser->save();
+
+            $groupUser->user->notify(new RoleChanged($group, $data['role']));
+
+            return back();
+        }
     }
 
     /**
