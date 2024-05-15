@@ -126,7 +126,7 @@ function onDeleteComment(comment) {
                     <div>
                         <h4 class="font-bold">
                             <a href="javascript:void(0)" class="hover:underline">
-                                {{ comment.user.username }}
+                                @{{ comment.user.username }}
                             </a>
                         </h4>
                         <small class="text-xs text-grey-400">

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Notifications\UserRemovedFromGroup;
 use Carbon\Carbon;
 use App\Models\User;
 use Inertia\Inertia;
@@ -269,8 +270,39 @@ class GroupController extends Controller
 
             $groupUser->user->notify(new RoleChanged($group, $data['role']));
 
-            return back();
+            // return back();
         }
+
+        return back();
+    }
+
+    public function removeUser(Request $request, Group $group)
+    {
+        if (!$group->isAdmin(Auth::id())) {
+            return response("You are not authorized to perform this action!!", 403);
+        }
+
+        $data = $request->validate([
+            'user_id' => ['required'],
+        ]);
+
+        $user_id = $data['user_id'];
+
+        if ($group->isOwner($user_id)) {
+            return response("You cannot remove the owner from the group.", 403);
+        }
+
+        $groupUser = GroupUser::where('user_id', $user_id)
+            ->where('group_id', $group->id)
+            ->first();
+
+        if ($groupUser) {
+            $user = $groupUser->user;
+            $groupUser->delete();
+
+            $groupUser->user->notify(new UserRemovedFromGroup($group));
+        }
+        return back();
     }
 
     /**

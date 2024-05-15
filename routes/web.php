@@ -66,6 +66,8 @@ Route::middleware('auth')->group(function () {
             ->name('group.approveRequest');
         Route::post('group/role-change/{group:slug}', [GroupController::class, 'roleChange'])
             ->name('group.role.change');
+        Route::delete('group/remove-user/{group:slug}', [GroupController::class, 'removeUser'])
+                ->name('group.removeUser');
 
 });
 

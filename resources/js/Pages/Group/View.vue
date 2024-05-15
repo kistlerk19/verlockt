@@ -135,6 +135,19 @@ function onRoleChange(user, role) {
         preserveScroll: true
     })
 }
+function deleteUserFromGroup(user) {
+    if (!window.confirm(`Are you sure you want to remove "${user.name}" from this group?`)) {
+        return false;
+    }
+
+    const form = useForm({
+        user_id: user.id,
+    })
+
+    form.delete(route('group.removeUser', props.group.slug), {
+        preserveScroll: true
+    })
+}
 </script>
 
 <template>
@@ -246,6 +259,9 @@ function onRoleChange(user, role) {
                         <Tab v-slot="{ selected }">
                             <TabItem text="Media" as="template" :selected="selected" />
                         </Tab>
+                        <Tab v-slot="{ selected }">
+                            <TabItem text="About" as="template" :selected="selected" />
+                        </Tab>
                     </TabList>
 
                     <TabPanels class="mt-2">
@@ -261,7 +277,8 @@ function onRoleChange(user, role) {
                                 :show-role-dropdown="isUserAdmin"
                                 :disable-role-dropdown="group.user_id === user.id"
                                 class="bg-gray-100 rounded-lg shadow-xl "
-                                @role-change="onRoleChange"/>
+                                @role-change="onRoleChange"
+                                @delete="deleteUserFromGroup"/>
                             </div>
                         </TabPanel>
                         <TabPanel v-if="isUserAdmin" class="p-3 rounded">
@@ -272,13 +289,15 @@ function onRoleChange(user, role) {
                                 :approve-button="true"
                                 @approve="approveUserRequest"
                                 @reject="rejectUserRequest"
-                                class="bg-gray-100 rounded-lg shadow-xl " />
+
+                                class="bg-gray-100 rounded-lg shadow-xl" />
                             </div>
                             <div class="py-8 text-center">
                                 There are no pending requests.
                             </div>
                         </TabPanel>
                         <TabPanel class="p-3 bg-white rounded shadow"> Media </TabPanel>
+                        <TabPanel class="p-3 bg-white rounded shadow"> About </TabPanel>
                     </TabPanels>
                 </TabGroup>
             </div>
