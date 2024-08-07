@@ -12,10 +12,12 @@ use App\Models\Impression;
 use App\Models\Post;
 use App\Models\PostAttachment;
 use App\Models\User;
+use App\Notifications\PostCreation;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
@@ -53,6 +55,12 @@ class PostController extends Controller
             }
 
             DB::commit();
+
+            $group = $post->group;
+
+            if ($group) {
+                Notification::send($group->approvedapprovedUsers, new PostCreation($post, $group));
+            }
         } catch (Exception $e) {
             foreach ($filePaths as $path) {
                 Storage::disk('public')->delete($path);

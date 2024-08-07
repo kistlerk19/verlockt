@@ -29,9 +29,10 @@ function onGroupCreate(group){
             You are not part of any group yet.
         </div>
         <div v-else>
-            <GroupItem v-for="group of groups" :group="group" />
+            <!-- <GroupItem v-for="group of groups" :group="group"/> -->
+            <GroupItem v-for="(group, index) of groups" :key="index" :group="group" />
         </div>
 
-        <GroupModal v-model="newGroupModal" @create="onGroupCreate(group)"/>
+        <GroupModal v-model="newGroupModal" @create="onGroupCreate"/>
     </div>
 </template>

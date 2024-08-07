@@ -10,8 +10,7 @@ import {
 import { XMarkIcon } from "@heroicons/vue/24/solid";
 import { useForm } from "@inertiajs/vue3";
 import Checkbox from "@/Components/Checkbox.vue";
-import TextAreaInput from "@/Components/TextAreaInput.vue";
-import TextInput from "@/Components/TextInput.vue";
+import GroupForm from "@/Components/app/GroupForm.vue";
 import axiosClient from '@/axiosClient.js';
 
 const props = defineProps({
@@ -41,10 +40,16 @@ const resetModal = () => {
     formErrors.value = {}
 };
 
+const closeModal = () => {
+    show.value = false;
+    emit('hide')
+    resetModal();
+};
 function save() {
     axiosClient.post(route('group.create'), form)
         .then(({ data }) => {
             closeModal()
+            console.log(data)
             emit('create', data)
         })
     // form.post(route('group.create'), {
@@ -58,11 +63,6 @@ function save() {
     //     }
     // })
 }
-const closeModal = () => {
-    show.value = false;
-    emit('hide')
-    resetModal();
-};
 </script>
 
 <template>
@@ -92,25 +92,12 @@ const closeModal = () => {
                                 <!-- Form -->
                                 <!-- <pre>{{ form }}</pre> -->
                                 <div class="px-4 py-3 mt-2">
-                                    <div class="mb-3">
-                                        <label>Group Name</label>
-                                        <TextInput type="text" class="block w-full mt-1 rounded-lg" v-model="form.name"
-                                            required autofocus />
-                                    </div>
-                                    <div class="mb-3">
-                                        <label>
-                                            <Checkbox name="remember" v-model:checked="form.auto_approval" />
-                                            Enable Auto Approval
-                                        </label>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label>About Group</label>
-                                        <TextAreaInput v-model="form.description" class="w-full shadow-2xl" />
-                                    </div>
+                                    <GroupForm :form="form" />
                                 </div>
 
                                 <div class="flex justify-end gap-2 px-4 py-3 mt-4">
                                     <button type="button"
+                                        @click="closeModal"
                                         class="relative flex items-center justify-center px-3 py-2 text-sm font-semibold text-gray-900 border-none rounded-full shadow-2xl bg-indigo-50 hover:bg-gray-200">
                                         cancel
                                     </button>

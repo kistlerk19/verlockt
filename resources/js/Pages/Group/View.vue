@@ -259,7 +259,7 @@ function deleteUserFromGroup(user) {
                         <Tab v-slot="{ selected }">
                             <TabItem text="Media" as="template" :selected="selected" />
                         </Tab>
-                        <Tab v-slot="{ selected }">
+                        <Tab v-if="isUserAdmin" v-slot="{ selected }">
                             <TabItem text="About" as="template" :selected="selected" />
                         </Tab>
                     </TabList>
@@ -297,7 +297,9 @@ function deleteUserFromGroup(user) {
                             </div>
                         </TabPanel>
                         <TabPanel class="p-3 bg-white rounded shadow"> Media </TabPanel>
-                        <TabPanel class="p-3 bg-white rounded shadow"> About </TabPanel>
+                        <TabPanel class="p-3 bg-white rounded shadow">
+                            <GroupForm :form="form" />
+                        </TabPanel>
                     </TabPanels>
                 </TabGroup>
             </div>

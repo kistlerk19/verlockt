@@ -96,6 +96,7 @@ function inviteUser() {
 
                                 <div class="flex justify-end gap-2 px-4 py-3 mt-4">
                                     <button type="button"
+                                        @click="closeModal"
                                         class="relative flex items-center justify-center px-3 py-2 text-sm font-semibold text-gray-900 border-none rounded-lg shadow-2xl bg-indigo-50 hover:bg-gray-200">
                                         cancel
                                     </button>
