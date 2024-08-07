@@ -3,6 +3,7 @@
 import Checkbox from "@/Components/Checkbox.vue";
 import TextInput from "@/Components/TextInput.vue";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+// import CKEditor from '@ckeditor/ckeditor5-vue';
 
 defineProps({
     form: Object

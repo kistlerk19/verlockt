@@ -55,7 +55,9 @@ Route::middleware('auth')->group(function () {
 
         // Groups
         Route::post('group', [GroupController::class, 'store'])
-        ->name('group.create');
+            ->name('group.create');
+        Route::put('group/{group:slug}', [GroupController::class, 'update'])
+            ->name('group.update');
         Route::post('group/profile-image/{group:slug}', [GroupController::class, 'updateGroupImage'])
             ->name('group.image.update');
         Route::post('group/invite/{group:slug}', [GroupController::class, 'inviteUsers'])

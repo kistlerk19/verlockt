@@ -8,12 +8,14 @@ import { XMarkIcon, ArrowUpTrayIcon, CameraIcon } from "@heroicons/vue/24/solid"
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import InviteUserModal from '@/Pages/Group/InviteUserModal.vue';
 import UserListItem from '@/Components/app/UserListItem.vue';
+import GroupForm from "@/Components/app/GroupForm.vue";
 import TextInput from '@/Components/TextInput.vue';
 
 const imageForm = useForm({
     cover: null,
     thumbnail: null,
 });
+
 
 const coverImageSrc = ref("");
 const thumbnailImageSrc = ref("");
@@ -36,6 +38,19 @@ const props = defineProps({
     users: Array,
     requests: Array,
 });
+
+const aboutForm = useForm({
+    name: usePage().props.group.name,
+    auto_approval: !!parseInt(usePage().props.group.auto_approval),
+    description: usePage().props.group.description,
+});
+
+function updateGroup() {
+    aboutForm.put(route('group.update', props.group.slug), {
+        preserveScroll: true,
+        //
+    })
+}
 
 function onCoverChange(event) {
     imageForm.cover = event.target.files[0];
@@ -298,7 +313,8 @@ function deleteUserFromGroup(user) {
                         </TabPanel>
                         <TabPanel class="p-3 bg-white rounded shadow"> Media </TabPanel>
                         <TabPanel class="p-3 bg-white rounded shadow">
-                            <GroupForm :form="form" />
+                            <GroupForm :form="aboutForm" />
+                            <PrimaryButton @click="updateGroup">update</PrimaryButton>
                         </TabPanel>
                     </TabPanels>
                 </TabGroup>
